@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Kuya Yana</string>
+    <string name="tareas">Tareas</string>
+    <string name="horario">Horario</string>
+    <string name="calendario">Calendario</string>
+    <string name="asignaturas">Materias</string>
+</resources>

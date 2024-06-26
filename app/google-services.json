@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "136741212515",
+    "project_id": "kuyayana-dev",
+    "storage_bucket": "kuyayana-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136741212515:android:3a34e69b32bd3ab76a8356",
+        "android_client_info": {
+          "package_name": "com.kuyayana.kuyayana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4eNI5Av8Y5e69TtcHtf5aaVR59QSJ3ZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
