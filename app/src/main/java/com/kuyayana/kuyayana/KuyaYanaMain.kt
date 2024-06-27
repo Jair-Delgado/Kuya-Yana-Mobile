@@ -1,6 +1,11 @@
 package com.kuyayana.kuyayana
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,13 +16,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.kuyayana.kuyayana.ui.theme.KuyaYanaTheme
+import com.example.compose.KuyaYanaTheme
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaNavigationBar
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaTopAppBar
 import com.kuyayana.kuyayana.ui.view.CalendarScreen
 import com.kuyayana.kuyayana.ui.view.ScheduleScreen
 import com.kuyayana.kuyayana.ui.view.SubjectScreen
 import com.kuyayana.kuyayana.ui.view.TaskList
+import com.kuyayana.kuyayana.ui.viewmodel.CategoryViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 
 
@@ -42,7 +48,16 @@ enum class KuyaYanaScreen(val title: Int){
             },
             bottomBar = {
                 KuyaYanaNavigationBar(navController)
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { /* Acción cuando se presiona el FAB */ },
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = "Agregar")
+                }
             }
+
         ) { innerPadding ->
             NavHost(
                 navController = navController,
@@ -51,7 +66,7 @@ enum class KuyaYanaScreen(val title: Int){
 
             ){
                 composable(route = KuyaYanaScreen.TaskList.name){
-                    TaskList()
+                    TaskList(categoryViewModel = CategoryViewModel())
                 }
                 composable(route = KuyaYanaScreen.Calendar.name){
                     CalendarScreen()

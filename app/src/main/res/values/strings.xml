@@ -4,4 +4,5 @@
     <string name="horario">Horario</string>
     <string name="calendario">Calendario</string>
     <string name="asignaturas">Materias</string>
+    <string name="inicio">Inicio</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.kuyayana.kuyayana.ui.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,40 +12,61 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kuyayana.kuyayana.data.Task
+import com.kuyayana.kuyayana.data.models.Category
 import com.kuyayana.kuyayana.data.tasks
+import com.kuyayana.kuyayana.ui.viewmodel.CategoryViewModel
 
 /*
 * Vista de las tareas
 * */
 
-//Genera y muestra una lista de las tareas a partir de la fun TaskItem (datos quemados),
+//Genera y muestra una lista de las tareas a partir de la fun TaskItem,
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TaskList (){
+fun TaskList (
+    categoryViewModel: CategoryViewModel
+){
+    val categories by categoryViewModel.categories.collectAsState()
+
+
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
     ) {
-        items(tasks){ task ->
-            TaskItem(task)
+            
+        items(categories){ category ->
+              TaskItem(category = category) 
         }
     }
+
+
+    
 }
 
 
 //Tarjeta individual donde se guarda la informacion de la tarea
 @Composable
 fun TaskItem (
-    task: Task,
+    category: Category,
     modifier: Modifier = Modifier
 ) {
     Card (
@@ -52,30 +74,33 @@ fun TaskItem (
             .padding(8.dp)
             .fillMaxWidth(),
           colors = CardDefaults.cardColors(
-              containerColor = Color.LightGray,
+              containerColor = MaterialTheme.colorScheme.secondary,
               contentColor = Color(0xFFEAE2B7)
           )
     ){
         Row (
             modifier = modifier
-                .padding(8.dp)
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+
         ){
             Column(
                 modifier = modifier
-                .padding(8.dp)
+                .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+
             ) {
                 Text(
-                    text = task.date,
-                    fontWeight = FontWeight.Bold
+                    text = category.categoryName,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+
                 )
-                Text(text = task.year)
+                //Text(text = task.year)
 
             }
-            VerticalDivider(
-                modifier = Modifier.height(60.dp),
 
-            )
-            Column(
+            /*Column(
                 modifier = modifier
                     .padding(8.dp)
             ) {
@@ -84,7 +109,7 @@ fun TaskItem (
                 Text(
                     text = task.content
                 )
-            }
+            }*/
         }
     }
 }
@@ -102,5 +127,11 @@ fun VerticalDivider(
 @Preview(showBackground = true)
 @Composable
 fun TaskItemPreview () {
-    TaskList()
+    FloatingActionButton(
+        onClick = { /*TODO*/ },
+        containerColor = Color.Red
+
+    ){
+        Icon(Icons.Filled.Add,"add",tint= Color.White )
+    }
 }

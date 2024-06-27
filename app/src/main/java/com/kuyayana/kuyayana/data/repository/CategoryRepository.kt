@@ -10,24 +10,11 @@ import kotlinx.coroutines.tasks.await
 
 class CategoryRepository {
     private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
     private val categoryCollection = db.collection("category")
 
     suspend fun addCategory(category: Category) {
         try {
-            val uid = auth.currentUser?.uid
-            if (uid != null){
-                val categoryData = hashMapOf(
-                    "categoryName" to category.categoryName,
-                    "users" to hashMapOf(uid to true) // Map with uid as key and true as value
-                )
-                categoryCollection
-                    .document()
-                    .set(categoryData)
-                    .await()
-            }
-
-            //categoryCollection.document(category.id).set(category).await()
+            categoryCollection.document(category.categoryName).set(category).await()
 
             Log.d("CategoryRepository", "Category added: ${category.categoryName}")
 
@@ -37,31 +24,16 @@ class CategoryRepository {
         }
     }
 
-    suspend fun getCategories(): List<Category> {
+    suspend fun getCategories(): List<Category>{
         return try {
 
-            Log.d("CategoryRepository", "Fetching categories from Firestore")
-            val uid = auth.currentUser?.uid
+            val snapshot = categoryCollection.get().await()
+            snapshot.toObjects(Category::class.java)
 
-            if (uid != null) {
+        }catch (e: Exception){
+            Log.e("CategoryRepository", "Error getting categories",e)
 
-                val snapshot = categoryCollection.
-                whereEqualTo("users.$uid", true)
-                    .get()
-                    .await()
-
-                snapshot.toObjects(Category::class.java)
-            }else{
-                Log.e("CategoryRepository", "Error: User not authenticated")
-                emptyList()
-            }
-
-
-        } catch (e: Exception) {
-
-            Log.e("CategoryRepository", "Error getting items", e)
             emptyList()
-
         }
     }
 }

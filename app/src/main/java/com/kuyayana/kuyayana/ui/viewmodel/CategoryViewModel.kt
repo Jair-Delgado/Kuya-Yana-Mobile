@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CategoryViewModel : ViewModel() {
+
     private val repository = CategoryRepository()
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
@@ -18,19 +19,8 @@ class CategoryViewModel : ViewModel() {
     init {
         getCategories()
     }
-    fun addCategory(category: Category) {
-        viewModelScope.launch {
-            try {
-                repository.addCategory(category)
-                Log.d("CategoryViewModel", "Category added successfully")
-                getCategories()
-            } catch (e: Exception) {
-                Log.e("CategoryViewModel", "Error adding category", e)
-            }
-        }
-    }
 
-     fun getCategories() {
+     private fun getCategories() {
         viewModelScope.launch {
             try {
                 _categories.value = repository.getCategories()
