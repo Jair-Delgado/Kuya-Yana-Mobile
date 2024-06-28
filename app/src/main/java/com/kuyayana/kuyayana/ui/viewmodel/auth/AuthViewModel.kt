@@ -1,9 +1,15 @@
 package com.kuyayana.kuyayana.ui.viewmodel.auth
 
+import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.kuyayana.kuyayana.R
+import com.kuyayana.kuyayana.data.Task
 import com.kuyayana.kuyayana.data.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,6 +74,7 @@ class AuthViewModel: ViewModel() {
     fun logout() {
         auth.signOut()
     }
+
 }
 
 

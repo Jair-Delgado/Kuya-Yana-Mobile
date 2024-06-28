@@ -12,7 +12,12 @@
           "package_name": "com.kuyayana.kuyayana"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "136741212515-9l080oj59s265ortgng13gqcqng9vchi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD4eNI5Av8Y5e69TtcHtf5aaVR59QSJ3ZE"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136741212515-9l080oj59s265ortgng13gqcqng9vchi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

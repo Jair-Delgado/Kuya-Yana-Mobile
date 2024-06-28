@@ -82,4 +82,10 @@ dependencies {
     // For  Firebase Authentication and Cloud Firestore
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
+
+    //GOOGLE CALENDAR
+   /* implementation (libs.google.api.client.android)
+    implementation (libs.google.api.services.calendar)
+    implementation ("com.google.android.gms:play-services-auth:21.2.0")
+    implementation ("com.google.android.gms:play-services-auth-api-phone:18.1.0")*/
 }

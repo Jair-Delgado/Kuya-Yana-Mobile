@@ -1,5 +1,7 @@
 package com.kuyayana.kuyayana.ui.view
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.Button
@@ -10,9 +12,14 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.kuyayana.kuyayana.R
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.auth.LoginState
 
@@ -25,6 +32,9 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val loginState by authViewModel.loginState.collectAsState()
+
+
+
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Login", )
@@ -55,6 +65,14 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Login")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Login with Google")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

@@ -1,5 +1,6 @@
 package com.kuyayana.kuyayana.ui.view.appBars
 
+import com.kuyayana.kuyayana.KuyaYanaScreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.ExitToApp
@@ -19,7 +20,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.kuyayana.kuyayana.KuyaYanaScreen
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 import kotlinx.coroutines.launch
 
