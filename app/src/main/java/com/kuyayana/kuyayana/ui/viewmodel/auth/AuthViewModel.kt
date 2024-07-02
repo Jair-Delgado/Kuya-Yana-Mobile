@@ -1,6 +1,7 @@
 package com.kuyayana.kuyayana.ui.viewmodel.auth
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,10 +17,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class AuthViewModel: ViewModel() {
+
+class AuthViewModel(): ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    //private lateinit var googleSignInClient: GoogleSignInClient
 
     //LOGIN
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -28,6 +31,36 @@ class AuthViewModel: ViewModel() {
     //REGISTER
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState: StateFlow<RegisterState> = _registerState
+
+    /*init {
+        configureGoogleSignIn()
+    }
+
+     fun configureGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestIdToken("82558435317-6ra3dj3irg96lh3t4scubs01bsdkue17.apps.googleusercontent.com")
+            .requestScopes(Scope(CalendarScopes.CALENDAR))
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(context, gso)
+    }
+    fun getGoogleSignInIntent(): Intent {
+        return googleSignInClient.signInIntent
+    }
+    // Manejar el resultado del inicio de sesión
+    fun handleSignInResult(data: Intent) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            // Aquí puedes usar la cuenta para realizar operaciones en el calendario
+        } catch (e: ApiException) {
+            // Manejar error
+        }
+    }
+
+
+*/
 
     fun login(email: String, password: String) {
         viewModelScope.launch {

@@ -12,6 +12,8 @@ activityCompose = "1.9.0"
 composeBom = "2023.08.00"
 material3Android = "1.2.1"
 material3Desktop = "1.2.1"
+playServicesAuth = "21.2.0"
+playServicesAuthApiPhone = "18.1.0"
 uiTextGoogleFonts = "1.6.8"
 navigationRuntimeKtx = "2.7.7"
 navigationCompose = "2.7.7"
@@ -38,6 +40,8 @@ androidx-material3-desktop = { group = "androidx.compose.material3", name = "mat
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+play-services-auth-api-phone = { module = "com.google.android.gms:play-services-auth-api-phone", version.ref = "playServicesAuthApiPhone" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

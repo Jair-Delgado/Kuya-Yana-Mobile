@@ -2,8 +2,8 @@ package com.kuyayana.kuyayana.data.repository
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.kuyayana.kuyayana.data.models.Category
 import com.kuyayana.kuyayana.data.models.Subject
 import kotlinx.coroutines.tasks.await
 
@@ -61,6 +61,21 @@ class SubjectRepository {
             Log.e("SubjectRepository", "Error getting items", e)
             emptyList()
 
+        }
+    }
+    suspend fun getSubjectDocumentById(subjectId: String): DocumentReference?{
+        return try {
+            val docRef = subjectCollection.document(subjectId)
+            val docSnapshot = docRef.get().await()
+
+            if (docSnapshot.exists()) {
+                docRef
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("SubjectRepository", "Error getting subject document by ID", e)
+            null
         }
     }
 }

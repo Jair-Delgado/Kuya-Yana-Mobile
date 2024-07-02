@@ -14,6 +14,7 @@ import com.kuyayana.kuyayana.ui.view.AppNavHost
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 
 class MainActivity : ComponentActivity() {
+    private val authViewModel: AuthViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -21,9 +22,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             KuyaYanaTheme {
                AppNavHost()
-                //KuyaYanaApp()
+               // KuyaYanaApp()
             }
         }
     }
+
 
 }

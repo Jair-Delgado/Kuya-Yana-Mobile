@@ -46,6 +46,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+
         }
     }
 }
@@ -83,9 +84,15 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
 
-    //GOOGLE CALENDAR
-   /* implementation (libs.google.api.client.android)
-    implementation (libs.google.api.services.calendar)
-    implementation ("com.google.android.gms:play-services-auth:21.2.0")
-    implementation ("com.google.android.gms:play-services-auth-api-phone:18.1.0")*/
+    /*implementation("com.google.android.gms:play-services-auth:20.2.0")
+    implementation("com.google.api-client:google-api-client-android:1.32.1")
+    implementation("com.google.api-client:google-api-client-gson:1.32.1")
+    implementation("com.google.apis:google-api-services-calendar:v3-rev20211026-1.32.1")
+    implementation ("com.google.http-client:google-http-client:1.44.0")*/
+
+
+
+
+
+
 }

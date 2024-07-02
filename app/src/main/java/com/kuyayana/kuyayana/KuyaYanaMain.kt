@@ -40,13 +40,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.KuyaYanaTheme
+import com.google.firebase.firestore.DocumentReference
+import com.kuyayana.kuyayana.data.repository.TeacherRepository
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaNavigationBar
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaTopAppBar
-import com.kuyayana.kuyayana.ui.view.CalendarScreen
+
+import com.kuyayana.kuyayana.ui.view.CreateTeacherScreen
 import com.kuyayana.kuyayana.ui.view.ScheduleScreen
 import com.kuyayana.kuyayana.ui.view.SubjectScreen
 import com.kuyayana.kuyayana.ui.view.TaskList
 import com.kuyayana.kuyayana.ui.viewmodel.CategoryViewModel
+import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
+import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 
 enum class KuyaYanaScreen(val title: Int){
@@ -147,7 +152,8 @@ fun KuyaYanaApp(
                         TaskList(categoryViewModel = CategoryViewModel())
                     }
                     composable(route = KuyaYanaScreen.Calendar.name) {
-                        CalendarScreen()
+                        //CalendarScreen()
+                        CreateTeacherScreen(teacherViewModel = TeacherViewModel())
                     }
                     composable(route = KuyaYanaScreen.Schedule.name) {
                         ScheduleScreen()
