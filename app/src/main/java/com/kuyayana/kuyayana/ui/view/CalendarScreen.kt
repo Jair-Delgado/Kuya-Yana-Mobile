@@ -123,13 +123,6 @@ fun CreateTeacherScreen(teacherViewModel: TeacherViewModel) {
             }
         }
 
-
-        /*OutlinedTextField(
-            value = selectedSubjectId,
-            onValueChange = { selectedSubjectId = it },
-            label = { Text("ID de Asignatura") },
-            modifier = Modifier.fillMaxWidth()
-        )*/
         Spacer(Modifier.padding(vertical = 16.dp))
         Button(
             onClick = {

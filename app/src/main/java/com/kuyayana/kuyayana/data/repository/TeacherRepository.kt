@@ -13,19 +13,21 @@ class TeacherRepository {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private val teacherCollection = db.collection("teachers")
+    private val subjectCollection = db.collection("subject")
 
-    suspend fun addTeacher(teacher: Teacher, subjectDoc: DocumentReference) {
+    suspend fun addTeacher(teacher: Teacher, subjectName: Subject) {
         try {
             val uid = auth.currentUser?.uid
             if (uid != null){
-                //val subjectDocRef = getSubjectDocumentReference(subject)
                 val teacherData = hashMapOf(
                     "teacherName" to teacher.teacherName,
                     "teacherLastName" to teacher.teacherLastName,
                     "email" to teacher.email,
                     "phoneNumber" to teacher.phoneNumber,
                     "user" to hashMapOf(uid to true),
-                    "subject" to subjectDoc
+                    "subject" to hashMapOf(
+                        "subjectName" to subjectName
+                    )
                 )
 
                 teacherCollection
@@ -34,13 +36,7 @@ class TeacherRepository {
                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
                     .await()
-
-                /*teacherCollection
-                    .add(teacherData)
-                    .await()*/
             }
-
-            //categoryCollection.document(category.id).set(category).await()
 
             Log.d("TeacherRepository", "Teacher added: ${teacher.teacherName}")
 
@@ -48,6 +44,7 @@ class TeacherRepository {
 
             Log.e("TeacherRepository", "Error adding a teacher", e)
         }
+
     }
     suspend fun getTeachers(): List<Teacher> {
         return try {
@@ -76,13 +73,41 @@ class TeacherRepository {
 
         }
     }
-    suspend fun getSubjects(): List<Subject> {
+    /*suspend fun getSubjects(): List<Subject> {
         return db.collection("subject")
             .get()
             .await()
             .toObjects(Subject::class.java)
+    }*/
+    suspend fun getSubjects(): List<Subject> {
+        return try {
+
+            Log.d("SubjectRepository", "Fetching subjects from Firestore")
+            val uid = auth.currentUser?.uid
+
+            if (uid != null) {
+
+                val snapshot = subjectCollection.
+                whereEqualTo("users.$uid", true)
+                    .get()
+                    .await()
+
+                snapshot.toObjects(Subject::class.java)
+            }else{
+                Log.e("SubjectRepository", "Error: User not authenticated")
+                emptyList()
+            }
+
+
+        } catch (e: Exception) {
+
+            Log.e("SubjectRepository", "Error getting items", e)
+            emptyList()
+
+        }
     }
-    private suspend fun getSubjectDocumentReference(subject: Subject): DocumentReference {
+     suspend fun getSubjectDocumentReference(subject: Subject): DocumentReference {
+
         val query = db.collection("subject")
             .whereEqualTo("subjectName", subject.subjectName)
         val result = query.get().await()

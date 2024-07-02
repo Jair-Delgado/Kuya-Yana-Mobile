@@ -30,14 +30,9 @@ class TeacherViewModel: ViewModel() {
     fun createTeacher(teacher: Teacher,subject: Subject) {
         viewModelScope.launch {
             try {
-                val subjectDoc = subjectRepository.getSubjectDocumentById(subject.subjectName)
-                if (subjectDoc != null) {
-                    repository.addTeacher(teacher, subjectDoc)
-                    getTeachers()
-                } else {
-                    Log.e("TeacherViewModel", "Subject document not found for ID: $subject")
-                    // Aquí puedes manejar el caso donde el documento no existe
-                }
+                val subjectId = repository.getSubjectDocumentReference(subject)
+                repository.addTeacher(teacher, subjectName = subject)
+                getTeachers()
 
             } catch (e: Exception) {
                 Log.e("TeacherViewModel","Error creating teacher")
