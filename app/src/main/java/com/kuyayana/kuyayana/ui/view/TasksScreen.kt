@@ -48,7 +48,7 @@ fun TaskList (
     val categories by categoryViewModel.categories.collectAsState()
 
 
-    LazyColumn(
+    /*LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
     ) {
@@ -56,7 +56,7 @@ fun TaskList (
         items(categories){ category ->
               TaskItem(category = category) 
         }
-    }
+    }*/
 
 
     

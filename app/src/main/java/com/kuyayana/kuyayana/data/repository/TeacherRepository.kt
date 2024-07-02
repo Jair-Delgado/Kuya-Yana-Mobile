@@ -12,7 +12,7 @@ import kotlinx.coroutines.tasks.await
 class TeacherRepository {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private val teacherCollection = db.collection("teachers")
+    private val teacherCollection = db.collection("teacher")
     private val subjectCollection = db.collection("subject")
 
     suspend fun addTeacher(teacher: Teacher, subjectName: Subject) {
@@ -29,7 +29,6 @@ class TeacherRepository {
                         "subjectName" to subjectName
                     )
                 )
-
                 teacherCollection
                     .document()
                     .set(teacherData)
@@ -37,14 +36,12 @@ class TeacherRepository {
                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
                     .await()
             }
-
             Log.d("TeacherRepository", "Teacher added: ${teacher.teacherName}")
 
         } catch (e: Exception) {
 
             Log.e("TeacherRepository", "Error adding a teacher", e)
         }
-
     }
     suspend fun getTeachers(): List<Teacher> {
         return try {
@@ -58,27 +55,19 @@ class TeacherRepository {
                 whereEqualTo("users.$uid", true)
                     .get()
                     .await()
-
                 snapshot.toObjects(Teacher::class.java)
             }else{
                 Log.e("TeacherRepository", "Error: User not authenticated")
                 emptyList()
             }
 
-
         } catch (e: Exception) {
-
             Log.e("TeacherRepository", "Error getting teachers", e)
             emptyList()
 
         }
     }
-    /*suspend fun getSubjects(): List<Subject> {
-        return db.collection("subject")
-            .get()
-            .await()
-            .toObjects(Subject::class.java)
-    }*/
+
     suspend fun getSubjects(): List<Subject> {
         return try {
 
