@@ -58,10 +58,12 @@ import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaNavigationBar
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaTopAppBar
 
 import com.kuyayana.kuyayana.ui.view.CreateTeacherScreen
+import com.kuyayana.kuyayana.ui.view.EventsScreen
 import com.kuyayana.kuyayana.ui.view.ScheduleScreen
 import com.kuyayana.kuyayana.ui.view.SubjectScreen
 import com.kuyayana.kuyayana.ui.view.TaskList
 import com.kuyayana.kuyayana.ui.viewmodel.CategoryViewModel
+import com.kuyayana.kuyayana.ui.viewmodel.EventViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
@@ -70,7 +72,8 @@ enum class KuyaYanaScreen(val title: Int){
     TaskList(title = R.string.tareas),
     Calendar(title = R.string.calendario),
     Schedule(title = R.string.horario),
-    Subject(title = R.string.asignaturas)
+    Subject(title = R.string.asignaturas),
+    Event(title= R.string.eventos)
 }
 
 @Composable
@@ -126,7 +129,7 @@ fun KuyaYanaApp(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     composable(route = KuyaYanaScreen.TaskList.name) {
-                        TaskList(categoryViewModel = CategoryViewModel())
+                        TaskList(eventViewModel = EventViewModel())
                     }
                     composable(route = KuyaYanaScreen.Calendar.name) {
                         //CalendarScreen()
@@ -137,6 +140,12 @@ fun KuyaYanaApp(
                     }
                     composable(route = KuyaYanaScreen.Subject.name) {
                         SubjectScreen()
+                    }
+                    composable(route = KuyaYanaScreen.Event.name){
+                        EventsScreen(
+                            eventViewModel = EventViewModel(),
+                            categoryName = Category()
+                        )
                     }
                 }
                 Box(
@@ -156,7 +165,10 @@ fun KuyaYanaApp(
                             horizontalAlignment = Alignment.End
                         ) {
                             ElevatedButton(
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    navController.navigate(KuyaYanaScreen.Event.name)
+                                    expanded = !expanded
+                                },
                                 modifier = modifier
                                     .padding(vertical = 4.dp)
                             ) {

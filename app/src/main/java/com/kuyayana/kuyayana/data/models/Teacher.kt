@@ -5,5 +5,5 @@ data class Teacher(
     val teacherName: String = "",
     val teacherLastName: String = "",
     val phoneNumber: String = "",
-    val subject: String = ""
+    //val subject: String = ""
 )

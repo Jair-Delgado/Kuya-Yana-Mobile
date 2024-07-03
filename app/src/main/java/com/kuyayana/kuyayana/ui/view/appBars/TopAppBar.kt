@@ -1,5 +1,6 @@
 package com.kuyayana.kuyayana.ui.view.appBars
 
+import android.util.Log
 import com.kuyayana.kuyayana.KuyaYanaScreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -20,6 +21,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 import kotlinx.coroutines.launch
 
@@ -34,6 +38,7 @@ import kotlinx.coroutines.launch
 fun KuyaYanaTopAppBar(
     currentScreen: KuyaYanaScreen,
     authViewModel:AuthViewModel,
+    navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ){
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -76,6 +81,8 @@ fun KuyaYanaTopAppBar(
             }
             IconButton(onClick = {
                 authViewModel.logout()
+                /*navController.navigate("login")
+                Log.d("ExitApp","Cerrando Sesion")*/
 
             }
             ) {

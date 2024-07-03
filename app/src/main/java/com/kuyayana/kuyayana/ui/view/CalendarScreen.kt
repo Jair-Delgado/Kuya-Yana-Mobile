@@ -1,18 +1,23 @@
 package com.kuyayana.kuyayana.ui.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,15 +57,22 @@ fun CalendarPreview(){
 
 
 @Composable
-fun CreateTeacherScreen(teacherViewModel: TeacherViewModel) {
+fun CreateTeacherScreen(
+    teacherViewModel: TeacherViewModel = viewModel()
+) {
     var email by remember { mutableStateOf("") }
     var teacherName by remember { mutableStateOf("") }
     var teacherLastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
-    var selectedSubjectId by remember { mutableStateOf("") }
-    var selectedSubject by remember { mutableStateOf<Subject?>(null) }
-    val subjects by teacherViewModel.subjects.collectAsState()
 
+    var selectedSubject by remember { mutableStateOf<Subject?>(null) }
+
+    val subjects by teacherViewModel.subjects.collectAsState()
+    val teachers by teacherViewModel.teachers.collectAsState()
+
+    LaunchedEffect(teachers) {
+        Log.d("TeacherScreen", "Teachers: $teachers")
+    }
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -132,9 +144,12 @@ fun CreateTeacherScreen(teacherViewModel: TeacherViewModel) {
                         teacherName = teacherName,
                         teacherLastName = teacherLastName,
                         phoneNumber = phoneNumber,
-                        subject = selectedSubject!!.subjectName
+                        //subject = selectedSubject!!.subjectName
                     )
-                    teacherViewModel.createTeacher(newTeacher, selectedSubject!!)
+                    teacherViewModel.createTeacher(
+                        newTeacher,
+                        selectedSubject!!
+                    )
                     email = ""
                     teacherName = ""
                     teacherLastName = ""
@@ -145,12 +160,13 @@ fun CreateTeacherScreen(teacherViewModel: TeacherViewModel) {
         ) {
             Text("Crear Profesor")
         }
+
+        LazyColumn {
+            items(teachers){ teacher ->
+                Text(text = teacher.teacherName)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
     }
 }
 
-/*@Preview(showBackground = true)
-@Composable
-fun PreviewCreateTeacherScreen() {
-    val viewModel: TeacherViewModel = viewModel()
-    CreateTeacherScreen(viewModel)
-}*/

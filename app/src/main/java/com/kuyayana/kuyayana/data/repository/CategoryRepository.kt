@@ -32,7 +32,6 @@ class CategoryRepository {
 
         }catch (e: Exception){
             Log.e("CategoryRepository", "Error getting categories",e)
-
             emptyList()
         }
     }

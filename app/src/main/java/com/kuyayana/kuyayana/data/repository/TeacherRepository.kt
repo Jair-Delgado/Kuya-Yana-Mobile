@@ -9,13 +9,14 @@ import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.models.Teacher
 import kotlinx.coroutines.tasks.await
 
+
 class TeacherRepository {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private val teacherCollection = db.collection("teacher")
     private val subjectCollection = db.collection("subject")
 
-    suspend fun addTeacher(teacher: Teacher, subjectName: Subject) {
+    suspend fun addTeacher(teacher: Teacher, subject: Subject) {
         try {
             val uid = auth.currentUser?.uid
             if (uid != null){
@@ -24,9 +25,9 @@ class TeacherRepository {
                     "teacherLastName" to teacher.teacherLastName,
                     "email" to teacher.email,
                     "phoneNumber" to teacher.phoneNumber,
-                    "user" to hashMapOf(uid to true),
+                    "users" to hashMapOf(uid to true),
                     "subject" to hashMapOf(
-                        "subjectName" to subjectName
+                        "subjectName" to subject.subjectName
                     )
                 )
                 teacherCollection
@@ -48,11 +49,10 @@ class TeacherRepository {
 
             Log.d("TeacherRepository", "Fetching teachers from Firestore")
             val uid = auth.currentUser?.uid
-
             if (uid != null) {
 
-                val snapshot = teacherCollection.
-                whereEqualTo("users.$uid", true)
+                val snapshot = teacherCollection
+                    .whereEqualTo("users.$uid", true)
                     .get()
                     .await()
                 snapshot.toObjects(Teacher::class.java)
@@ -87,7 +87,6 @@ class TeacherRepository {
                 emptyList()
             }
 
-
         } catch (e: Exception) {
 
             Log.e("SubjectRepository", "Error getting items", e)
@@ -95,6 +94,7 @@ class TeacherRepository {
 
         }
     }
+
      suspend fun getSubjectDocumentReference(subject: Subject): DocumentReference {
 
         val query = db.collection("subject")

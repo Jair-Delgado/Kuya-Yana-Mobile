@@ -25,11 +25,7 @@ class SubjectRepository {
                     .set(subjectData)
                     .await()
             }
-
-            //categoryCollection.document(category.id).set(category).await()
-
             Log.d("SubjectRepository", "Subject added: ${subject.subjectName}")
-
         } catch (e: Exception) {
 
             Log.e("SubjectRepository", "Error adding a subject", e)
@@ -54,7 +50,6 @@ class SubjectRepository {
                 Log.e("SubjectRepository", "Error: User not authenticated")
                 emptyList()
             }
-
 
         } catch (e: Exception) {
 

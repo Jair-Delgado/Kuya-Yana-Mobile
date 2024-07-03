@@ -32,8 +32,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kuyayana.kuyayana.data.Task
 import com.kuyayana.kuyayana.data.models.Category
+import com.kuyayana.kuyayana.data.models.Event
 import com.kuyayana.kuyayana.data.tasks
 import com.kuyayana.kuyayana.ui.viewmodel.CategoryViewModel
+import com.kuyayana.kuyayana.ui.viewmodel.EventViewModel
 
 /*
 * Vista de las tareas
@@ -43,20 +45,22 @@ import com.kuyayana.kuyayana.ui.viewmodel.CategoryViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TaskList (
-    categoryViewModel: CategoryViewModel
+    //categoryViewModel: CategoryViewModel,
+    eventViewModel: EventViewModel
 ){
-    val categories by categoryViewModel.categories.collectAsState()
+    //val categories by categoryViewModel.categories.collectAsState()
+    val events by eventViewModel.events.collectAsState()
 
 
-    /*LazyColumn(
+    LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
     ) {
             
-        items(categories){ category ->
-              TaskItem(category = category) 
+        items(events){ event ->
+              TaskItem(event)
         }
-    }*/
+    }
 
 
     
@@ -66,7 +70,7 @@ fun TaskList (
 //Tarjeta individual donde se guarda la informacion de la tarea
 @Composable
 fun TaskItem (
-    category: Category,
+    event: Event,
     modifier: Modifier = Modifier
 ) {
     Card (
@@ -91,7 +95,7 @@ fun TaskItem (
 
             ) {
                 Text(
-                    text = category.categoryName,
+                    text = event.description,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
 

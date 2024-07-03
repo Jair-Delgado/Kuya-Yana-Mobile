@@ -17,6 +17,7 @@ class TeacherViewModel: ViewModel() {
 
     private val repository = TeacherRepository()
     private val subjectRepository = SubjectRepository()
+
     private val _teachers = MutableStateFlow<List<Teacher>>(emptyList())
     val teachers: StateFlow<List<Teacher>> = _teachers
 
@@ -27,11 +28,16 @@ class TeacherViewModel: ViewModel() {
         getTeachers()
         getSubjects()
     }
-    fun createTeacher(teacher: Teacher,subject: Subject) {
+    fun createTeacher(
+        teacher: Teacher,
+        subject: Subject
+    ) {
         viewModelScope.launch {
             try {
-                val subjectId = repository.getSubjectDocumentReference(subject)
-                repository.addTeacher(teacher, subjectName = subject)
+                repository.addTeacher(
+                    teacher,
+                    subject
+                )
                 getTeachers()
 
             } catch (e: Exception) {
