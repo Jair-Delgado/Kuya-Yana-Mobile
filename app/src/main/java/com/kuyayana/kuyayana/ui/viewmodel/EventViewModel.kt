@@ -21,8 +21,6 @@ class EventViewModel: ViewModel() {
     private val repository = EventRepository()
     private val subjectRepository = SubjectRepository()
     private val teacherRepository = TeacherRepository()
-    private val  categoryRepository = CategoryRepository()
-
 
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events : StateFlow<List<Event>> = _events
@@ -38,7 +36,6 @@ class EventViewModel: ViewModel() {
 
     private val _category = MutableStateFlow<Category?>(null)
     val category : StateFlow<Category?> get() = _category
-
 
     init {
         getEvents()
@@ -58,9 +55,9 @@ class EventViewModel: ViewModel() {
                     teacher
                 )
                 getEvents()
-                Log.d("EventViewModel","Evento creado")
+                Log.d("EventViewModel","Event added")
             }catch (e: Exception){
-                Log.e("EventViewModel", "Error al crear eventos")
+                Log.e("EventViewModel", "Error creating event")
             }
         }
     }
@@ -76,7 +73,7 @@ class EventViewModel: ViewModel() {
     }
     fun getTeachers() {
         viewModelScope.launch {
-            _teachers.value = repository.getTeachers()
+            _teachers.value = teacherRepository.getTeachers()
         }
     }
 

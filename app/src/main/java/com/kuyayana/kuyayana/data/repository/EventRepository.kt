@@ -17,9 +17,7 @@ class EventRepository {
 
     //Referencias a las colecciones
     private val eventCollection = db.collection("events")
-    private val subjectCollection = db.collection("subject")
     private val teacherCollection = db.collection("teacher")
-    private val categoryColecction = db.collection("category")
 
     suspend fun addEvent(
         event: Event,
@@ -27,7 +25,6 @@ class EventRepository {
         teacher:Teacher,
     ) {
         try {
-
             //verifica si un usuario esta registrado, sino devuelve null (se usa para que cada creacion se este vinculada al usuario)
 
             val uid = auth.currentUser?.uid
@@ -82,75 +79,4 @@ class EventRepository {
             emptyList()
         }
     }
-    suspend fun getSubjects(): List<Subject> {
-        return try {
-
-            Log.d("SubjectRepository", "Fetching subjects from Firestore")
-            val uid = auth.currentUser?.uid
-
-            if (uid != null) {
-
-                val snapshot = subjectCollection.
-                whereEqualTo("users.$uid", true)
-                    .get()
-                    .await()
-
-                snapshot.toObjects(Subject::class.java)
-            }else{
-                Log.e("SubjectRepository", "Error: User not authenticated")
-                emptyList()
-            }
-
-
-        } catch (e: Exception) {
-
-            Log.e("SubjectRepository", "Error getting items", e)
-            emptyList()
-
-        }
-    }
-    suspend fun getTeachers(): List<Teacher> {
-        return try {
-
-            Log.d("TeacherRepository", "Fetching teachers from Firestore")
-            val uid = auth.currentUser?.uid
-
-            if (uid != null) {
-
-                val snapshot = teacherCollection
-                    .whereEqualTo("users.$uid", true)
-                    .get()
-                    .await()
-                snapshot.toObjects(Teacher::class.java)
-            }else{
-                Log.e("TeacherRepository", "Error: User not authenticated")
-                emptyList()
-            }
-
-        } catch (e: Exception) {
-            Log.e("TeacherRepository", "Error getting teachers", e)
-            emptyList()
-
-        }
-    }
-    suspend fun getCategory(categoryName: Category): Category? {
-        val snapshot = db.collection("category")
-            .document(categoryName.categoryName)
-            .get()
-            .await()
-        return snapshot.toObject(Category::class.java)
-    }
-    suspend fun getCategories(): List<Category>{
-        return try {
-
-            val snapshot = categoryColecction.get().await()
-            snapshot.toObjects(Category::class.java)
-
-        }catch (e: Exception){
-            Log.e("CategoryRepository", "Error getting categories",e)
-            emptyList()
-        }
-    }
-
-
 }

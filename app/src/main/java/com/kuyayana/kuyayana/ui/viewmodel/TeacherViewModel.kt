@@ -57,7 +57,7 @@ class TeacherViewModel: ViewModel() {
     }
     fun getSubjects() {
         viewModelScope.launch {
-            _subjects.value = repository.getSubjects()
+            _subjects.value = subjectRepository.getSubjects()
         }
     }
 }

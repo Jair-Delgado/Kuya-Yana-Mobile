@@ -53,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.compose.KuyaYanaTheme
 import com.google.firebase.firestore.DocumentReference
 import com.kuyayana.kuyayana.data.models.Category
+import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.repository.TeacherRepository
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaNavigationBar
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaTopAppBar
@@ -139,7 +140,9 @@ fun KuyaYanaApp(
                         ScheduleScreen()
                     }
                     composable(route = KuyaYanaScreen.Subject.name) {
-                        SubjectScreen()
+                        SubjectScreen(
+                            //subject = Subject(),
+                            subjectViewModel = SubjectViewModel())
                     }
                     composable(route = KuyaYanaScreen.Event.name){
                         EventsScreen(

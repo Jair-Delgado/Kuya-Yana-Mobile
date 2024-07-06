@@ -67,45 +67,4 @@ class TeacherRepository {
 
         }
     }
-
-    suspend fun getSubjects(): List<Subject> {
-        return try {
-
-            Log.d("SubjectRepository", "Fetching subjects from Firestore")
-            val uid = auth.currentUser?.uid
-
-            if (uid != null) {
-
-                val snapshot = subjectCollection.
-                whereEqualTo("users.$uid", true)
-                    .get()
-                    .await()
-
-                snapshot.toObjects(Subject::class.java)
-            }else{
-                Log.e("SubjectRepository", "Error: User not authenticated")
-                emptyList()
-            }
-
-        } catch (e: Exception) {
-
-            Log.e("SubjectRepository", "Error getting items", e)
-            emptyList()
-
-        }
-    }
-
-     suspend fun getSubjectDocumentReference(subject: Subject): DocumentReference {
-
-        val query = db.collection("subject")
-            .whereEqualTo("subjectName", subject.subjectName)
-        val result = query.get().await()
-
-        if (result.documents.isNotEmpty()) {
-            return result.documents[0].reference
-        } else {
-            throw IllegalArgumentException("Subject document not found for subject: ${subject.subjectName}")
-        }
-    }
-
 }
