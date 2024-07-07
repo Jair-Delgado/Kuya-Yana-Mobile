@@ -95,7 +95,7 @@ fun TaskItem (
 
             ) {
                 Text(
-                    text = event.description,
+                    text = event.title,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
 
@@ -128,14 +128,8 @@ fun VerticalDivider(
     )
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun TaskItemPreview () {
-    FloatingActionButton(
-        onClick = { /*TODO*/ },
-        containerColor = Color.Red
-
-    ){
-        Icon(Icons.Filled.Add,"add",tint= Color.White )
-    }
-}
+   TaskItem()
+}*/

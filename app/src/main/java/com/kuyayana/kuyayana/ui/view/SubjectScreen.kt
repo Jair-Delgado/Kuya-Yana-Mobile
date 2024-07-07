@@ -24,25 +24,30 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.kuyayana.kuyayana.KuyaYanaScreen
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
+import com.kuyayana.kuyayana.R
+import com.kuyayana.kuyayana.data.models.Event
 
 @Composable
 fun SubjectScreen(
-    subjectViewModel: SubjectViewModel = viewModel(),
+    navController: NavHostController ,
+    subjectViewModel: SubjectViewModel = viewModel()
 ) {
-    //val subjectId = subject.id ?: return
     var name by remember { mutableStateOf("") }
 
     // Recolecta las materias del ViewModel
     val subjects by subjectViewModel.subjects.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var editingSubject by remember { mutableStateOf<Subject?>(null) }
-
 
     LaunchedEffect(subjects) {
         Log.d("SubjectScreen", "Subjects: $subjects")
@@ -67,7 +72,7 @@ fun SubjectScreen(
                 name = ""
             }
         }) {
-            Text("Agregar")
+            Text(stringResource(id = R.string.agregar))
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyVerticalGrid(
@@ -97,6 +102,13 @@ fun SubjectScreen(
                     })
                 }
             }
+        }
+        Button(
+            onClick = {
+                navController.navigate(KuyaYanaScreen.Teacher.name)
+            }
+        ) {
+            Text(stringResource(id = R.string.crea_un_profesor))
         }
     }
 }

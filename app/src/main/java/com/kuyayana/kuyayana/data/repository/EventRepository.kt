@@ -30,6 +30,7 @@ class EventRepository {
             val uid = auth.currentUser?.uid
             if(uid != null ){
                 val eventData = hashMapOf(
+                    "id" to event.id,
                     "title" to event.title,
                     "description" to event.description,
                     "start" to event.start,
@@ -49,10 +50,13 @@ class EventRepository {
                     "user" to hashMapOf(uid to true)
                 )
                 //Guarda la info de eventData en el documento
-                eventCollection
-                    .document()
-                    .set(eventData)
+                val documentReference =eventCollection
+                    .add(eventData)
                     .await()
+                documentReference
+                    .update("id",documentReference.id)
+                    .await()
+                documentReference.id
             }
             Log.d("EventRepository", "Event added ${event.description}")
         }catch (e: Exception){
@@ -66,7 +70,7 @@ class EventRepository {
             if (uid != null){
                 val snapshot = eventCollection
                     //verifica que en la coleccion haya un campo users y este este en true
-                    .whereEqualTo("users.$uid",true)
+                    .whereEqualTo("user.$uid",true)
                     .get()
                     .await()
                 snapshot.toObjects(Event::class.java)

@@ -1,6 +1,5 @@
 package com.kuyayana.kuyayana.ui.view
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -24,39 +23,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.firestore.DocumentReference
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.models.Teacher
-import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 
 
-/*
-* Vista del calendario
-* */
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CalendarScreen ( ){
-    Column {
-        Text(text = "Calendario")
-    }
-}
-
-
-
-
-@Preview
-@Composable
-fun CalendarPreview(){
-    CalendarScreen()
-}
-
-
-/*@Composable
-fun CreateTeacherScreen(
+fun TeacherScreen(
     teacherViewModel: TeacherViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
@@ -120,10 +95,10 @@ fun CreateTeacherScreen(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
 
-            ) {
+                ) {
                 subjects.forEach { subject ->
                     DropdownMenuItem(
-                        text = {Text(subject.subjectName)},
+                        text = { Text(subject.subjectName) },
                         onClick = {
                             selectedSubject = subject
                             expanded = false
@@ -167,5 +142,4 @@ fun CreateTeacherScreen(
             }
         }
     }
-}*/
-
+}

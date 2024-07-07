@@ -1,5 +1,6 @@
 package com.kuyayana.kuyayana.data.repository
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
@@ -14,6 +15,7 @@ class SubjectRepository {
     private val auth = FirebaseAuth.getInstance()
     private val subjectCollection = db.collection("subject")
 
+    @SuppressLint("SuspiciousIndentation")
     suspend fun addSubject(subject: Subject) {
         try {
             val uid = auth.currentUser?.uid

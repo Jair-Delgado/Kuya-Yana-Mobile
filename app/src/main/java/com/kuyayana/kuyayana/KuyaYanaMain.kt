@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,10 +56,11 @@ import com.google.firebase.firestore.DocumentReference
 import com.kuyayana.kuyayana.data.models.Category
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.repository.TeacherRepository
+import com.kuyayana.kuyayana.ui.view.CalendarScreen
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaNavigationBar
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaTopAppBar
 
-import com.kuyayana.kuyayana.ui.view.CreateTeacherScreen
+import com.kuyayana.kuyayana.ui.view.TeacherScreen
 import com.kuyayana.kuyayana.ui.view.EventsScreen
 import com.kuyayana.kuyayana.ui.view.ScheduleScreen
 import com.kuyayana.kuyayana.ui.view.SubjectScreen
@@ -74,12 +76,12 @@ enum class KuyaYanaScreen(val title: Int){
     Calendar(title = R.string.calendario),
     Schedule(title = R.string.horario),
     Subject(title = R.string.asignaturas),
-    Event(title= R.string.eventos)
+    Event(title= R.string.eventos),
+    Teacher(title = (R.string.crea_un_profesor))
 }
 
 @Composable
 fun KuyaYanaApp(
-
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
@@ -108,7 +110,9 @@ fun KuyaYanaApp(
 
                     Icon(
                         if (expanded) Icons.Filled.Add else Icons.Filled.Clear,
-                        contentDescription = if (expanded)"Cerrar" else "Agregar"
+                        contentDescription = if (expanded) stringResource(R.string.cerrar) else stringResource(
+                            R.string.agregar
+                        )
                     )
                 }
 
@@ -133,22 +137,26 @@ fun KuyaYanaApp(
                         TaskList(eventViewModel = EventViewModel())
                     }
                     composable(route = KuyaYanaScreen.Calendar.name) {
-                        //CalendarScreen()
-                        CreateTeacherScreen(teacherViewModel = TeacherViewModel())
+                        CalendarScreen()
+                        //CreateTeacherScreen(teacherViewModel = TeacherViewModel())
                     }
                     composable(route = KuyaYanaScreen.Schedule.name) {
                         ScheduleScreen()
                     }
                     composable(route = KuyaYanaScreen.Subject.name) {
                         SubjectScreen(
-                            //subject = Subject(),
-                            subjectViewModel = SubjectViewModel())
+                            navController,
+                            subjectViewModel = SubjectViewModel()
+                        )
                     }
                     composable(route = KuyaYanaScreen.Event.name){
                         EventsScreen(
                             eventViewModel = EventViewModel(),
                             categoryName = Category()
                         )
+                    }
+                    composable(route = KuyaYanaScreen.Teacher.name){
+                        TeacherScreen(teacherViewModel = TeacherViewModel())
                     }
                 }
                 Box(
@@ -184,7 +192,7 @@ fun KuyaYanaApp(
                                 )
                             }
                             ElevatedButton(
-                                onClick = { /*TODO*/ },
+                                onClick = { navController.navigate(KuyaYanaScreen.Teacher.name)},
                                 modifier = modifier
                                     .padding(vertical = 16.dp)
 
