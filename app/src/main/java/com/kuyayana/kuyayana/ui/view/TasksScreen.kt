@@ -1,10 +1,15 @@
 package com.kuyayana.kuyayana.ui.view
 
 import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,16 +19,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,35 +62,38 @@ fun TaskList (
 ){
     //val categories by categoryViewModel.categories.collectAsState()
     val events by eventViewModel.events.collectAsState()
-
-
-    LazyColumn(
-            modifier = Modifier
+    LazyColumn(modifier = Modifier
                 .fillMaxSize()
     ) {
-            
         items(events){ event ->
-              TaskItem(event)
+              TaskItem(event,eventViewModel)
         }
     }
-
-
-    
 }
-
 
 //Tarjeta individual donde se guarda la informacion de la tarea
 @Composable
 fun TaskItem (
     event: Event,
+    eventViewModel: EventViewModel,
     modifier: Modifier = Modifier
 ) {
+    var expandEvent by remember { mutableStateOf(false)}
+    val message by eventViewModel.message.observeAsState("")
     Card (
         modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .animateContentSize()
+            .height(if (expandEvent) 180.dp else 80.dp)
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                expandEvent = !expandEvent
+            },
           colors = CardDefaults.cardColors(
-              containerColor = MaterialTheme.colorScheme.secondary,
+              containerColor = MaterialTheme.colorScheme.primaryContainer,
               contentColor = Color(0xFFEAE2B7)
           )
     ){
@@ -86,7 +101,6 @@ fun TaskItem (
             modifier = modifier
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
-
         ){
             Column(
                 modifier = modifier
@@ -97,37 +111,70 @@ fun TaskItem (
                 Text(
                     text = event.title,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = MaterialTheme.typography.titleMedium
                 )
-                //Text(text = task.year)
-
             }
+        }
+        if(expandEvent){
+                Box(modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                ) {
+                    Column {
+                        Text(
+                            text = event.description,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp,
+                                   // vertical = 8.dp
+                                )
+                        )
+                        Spacer(modifier = Modifier.height(100.dp))
+                    }
+                    Spacer(modifier = Modifier.height(100.dp))
+                    Text(
+                        text = "Termina "+ event.end,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                    )
+                    /*Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                    ) {
+                            IconButton(
+                                onClick = {} ,
+                                modifier = Modifier
+                                    //.align(Alignment.BottomStart)
+                                    .padding(16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "Localized description",
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                            IconButton(
+                                onClick = { },
+                                modifier = Modifier
+                                    //.align(Alignment.BottomStart)
+                                    .padding(16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Localized description",
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
 
-            /*Column(
-                modifier = modifier
-                    .padding(8.dp)
-            ) {
-                Text(text = task.title,
-                    fontWeight = FontWeight.Bold)
-                Text(
-                    text = task.content
-                )
-            }*/
+
+                    }*/
+                }
         }
     }
 }
-@Composable
-fun VerticalDivider(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .width(1.dp)
-            .background(Color.Gray)
-    )
-}
-
 /*@Preview(showBackground = true)
 @Composable
 fun TaskItemPreview () {

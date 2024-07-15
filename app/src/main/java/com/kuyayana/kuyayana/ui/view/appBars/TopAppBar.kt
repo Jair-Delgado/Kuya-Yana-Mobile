@@ -1,7 +1,6 @@
 package com.kuyayana.kuyayana.ui.view.appBars
 
 import android.util.Log
-import com.kuyayana.kuyayana.KuyaYanaScreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.ExitToApp
@@ -24,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 import kotlinx.coroutines.launch
 
@@ -38,62 +38,57 @@ import kotlinx.coroutines.launch
 fun KuyaYanaTopAppBar(
     currentScreen: KuyaYanaScreen,
     authViewModel:AuthViewModel,
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ){
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val secondary = MaterialTheme.colorScheme.secondary
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            //containerColor = Color.White,
+            titleContentColor = secondary
         ),
         title = { Text(stringResource(currentScreen.title))
-
         },
         navigationIcon = {
-
             IconButton(onClick = {
                 scope.launch {
                     drawerState.apply {
                         if (isClosed) open() else close()
                     }
                 }
-
             }) {
                 Icon(
                     imageVector = Icons.Rounded.Menu,
                     contentDescription = "Localized description",
-                    tint = Color.White
+                    tint = secondary
                 )
             }
-
         },
-
         actions = {
             IconButton(onClick = { /* do something */ }) {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Localized description",
-                    tint = Color.White
+                    tint = secondary
                 )
             }
             IconButton(onClick = {
                 authViewModel.logout()
-                /*navController.navigate("login")
-                Log.d("ExitApp","Cerrando Sesion")*/
-
+                navController.navigate(KuyaYanaScreen.Login.name)
+                Log.d("ExitApp","Cerrando Sesion")
             }
             ) {
                 Icon(
                     imageVector = Icons.Rounded.ExitToApp,
                     contentDescription = "Localized description",
-                    tint = Color.White
+                    tint = secondary
                 )
             }
         },
-
     )
 }
 

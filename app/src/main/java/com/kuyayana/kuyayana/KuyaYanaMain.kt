@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -56,12 +59,14 @@ import com.google.firebase.firestore.DocumentReference
 import com.kuyayana.kuyayana.data.models.Category
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.repository.TeacherRepository
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 import com.kuyayana.kuyayana.ui.view.CalendarScreen
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaNavigationBar
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaTopAppBar
 
 import com.kuyayana.kuyayana.ui.view.TeacherScreen
 import com.kuyayana.kuyayana.ui.view.EventsScreen
+import com.kuyayana.kuyayana.ui.view.LoginScreen
 import com.kuyayana.kuyayana.ui.view.ScheduleScreen
 import com.kuyayana.kuyayana.ui.view.SubjectScreen
 import com.kuyayana.kuyayana.ui.view.TaskList
@@ -71,43 +76,39 @@ import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
 
-enum class KuyaYanaScreen(val title: Int){
-    TaskList(title = R.string.tareas),
-    Calendar(title = R.string.calendario),
-    Schedule(title = R.string.horario),
-    Subject(title = R.string.asignaturas),
-    Event(title= R.string.eventos),
-    Teacher(title = (R.string.crea_un_profesor))
-}
-
 @Composable
 fun KuyaYanaApp(
     navController: NavHostController = rememberNavController(),
+    //navController: NavHostController,
+    authViewModel: AuthViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     var visible by remember { mutableStateOf(true) }
     var isOverlayVisible by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(true) }
+
     //val categories by categoryViewModel.categories.collectAsState()
     val currentScreen =
         KuyaYanaScreen.valueOf(backStackEntry?.destination?.route ?: KuyaYanaScreen.TaskList.name)
 
     Scaffold(
         topBar = {
-            KuyaYanaTopAppBar(currentScreen = currentScreen, authViewModel = AuthViewModel())
+            KuyaYanaTopAppBar(
+                currentScreen = currentScreen,
+                authViewModel = AuthViewModel(),
+                navController = navController
+            )
         },
         bottomBar = {
             KuyaYanaNavigationBar(navController)
         },
         floatingActionButton = {
-
             FloatingActionButton(
                 onClick = { expanded = !expanded },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Crossfade(targetState = expanded, label = "") { expanded->
-
                     Icon(
                         if (expanded) Icons.Filled.Add else Icons.Filled.Clear,
                         contentDescription = if (expanded) stringResource(R.string.cerrar) else stringResource(
@@ -118,7 +119,6 @@ fun KuyaYanaApp(
 
             }
         },
-        
         floatingActionButtonPosition = FabPosition.End,
         content = { paddingValues ->
             Box(
@@ -127,7 +127,6 @@ fun KuyaYanaApp(
                     .padding(paddingValues),
                 contentAlignment = Alignment.BottomEnd
             ) {
-
                 NavHost(
                     navController = navController,
                     startDestination = KuyaYanaScreen.TaskList.name,
@@ -170,7 +169,6 @@ fun KuyaYanaApp(
 
                         Column(
                             modifier = Modifier
-
                                 .padding(vertical = 16.dp, horizontal = 8.dp)
                                 .animateContentSize(),
                             horizontalAlignment = Alignment.End
@@ -183,12 +181,15 @@ fun KuyaYanaApp(
                                 modifier = modifier
                                     .padding(vertical = 4.dp)
                             ) {
-                                Text(text = "Evento")
+                                Text(
+                                    text = "Evento",
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Icon(
                                     painter = painterResource(id = R.drawable.event),
                                     contentDescription = "Localized description",
-                                    tint = Color.Black,
+                                    tint = MaterialTheme.colorScheme.tertiary,
                                 )
                             }
                             ElevatedButton(
@@ -197,15 +198,18 @@ fun KuyaYanaApp(
                                     .padding(vertical = 16.dp)
 
                             ) {
-                                Text(text = "Clase")
+                                Text(
+                                    text = "Clase",
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Icon(
                                     painter = painterResource(id = R.drawable.class_icon),
                                     contentDescription = "Localized description",
-                                    tint = Color.Black,
+                                    tint = MaterialTheme.colorScheme.tertiary
                                 )
                             }
-                            Spacer(modifier = Modifier.height(50.dp))
+                            Spacer(modifier = Modifier.height(56.dp))
                         }
                     }
                 }
@@ -214,10 +218,3 @@ fun KuyaYanaApp(
     )
 }
 
-/*@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    KuyaYanaTheme(darkTheme = false) {
-        Fabbutton()
-    }
-}*/

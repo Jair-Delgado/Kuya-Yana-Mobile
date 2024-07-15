@@ -1,6 +1,8 @@
 package com.kuyayana.kuyayana.ui.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -15,6 +17,9 @@ import com.kuyayana.kuyayana.data.repository.TeacherRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class EventViewModel: ViewModel() {
 
@@ -33,6 +38,12 @@ class EventViewModel: ViewModel() {
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories :StateFlow<List<Category>> = _categories
+
+    private val _selectedDate = MutableLiveData<String>()
+    val selectedDate: LiveData<String> get() = _selectedDate
+
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String> get() = _message
 
     private val _category = MutableStateFlow<Category?>(null)
     val category : StateFlow<Category?> get() = _category
@@ -74,6 +85,25 @@ class EventViewModel: ViewModel() {
     fun getTeachers() {
         viewModelScope.launch {
             _teachers.value = teacherRepository.getTeachers()
+        }
+    }
+    fun updateMessage(date: String) {
+        viewModelScope.launch {
+
+            val selectedCalendar = Calendar.getInstance().apply {
+                time = SimpleDateFormat("dd-MM-yy", Locale.getDefault()).parse(date)!!
+            }
+            val currentDate = Calendar.getInstance()
+
+            val differenceInMillis = selectedCalendar.timeInMillis - currentDate.timeInMillis
+            val differenceInDays = (differenceInMillis / (1000 * 60 * 60 * 24)).toInt()
+
+            _message.value = when {
+                differenceInDays > 0 -> "El evento termina dentro de $differenceInDays días"
+                differenceInDays == 0 -> "El evento termina hoy"
+                else -> "El evento ya ha terminado"
+            }
+            Log.d("EventViewModel", "Mensaje actualizado: ${_message.value}")
         }
     }
 

@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -12,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.kuyayana.kuyayana.R
 import com.kuyayana.kuyayana.data.Task
 import com.kuyayana.kuyayana.data.models.User
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -59,9 +62,7 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
-
 */
-
     fun login(email: String, password: String) {
         viewModelScope.launch {
             try {
@@ -103,11 +104,10 @@ class AuthViewModel(): ViewModel() {
             }
         }
     }
-
     fun logout() {
         auth.signOut()
-    }
 
+    }
 }
 
 

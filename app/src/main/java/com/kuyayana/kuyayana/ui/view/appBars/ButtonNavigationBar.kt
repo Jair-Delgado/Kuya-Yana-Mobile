@@ -13,8 +13,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.kuyayana.kuyayana.KuyaYanaScreen
+
 import com.kuyayana.kuyayana.R
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 
 //BUTTON BAR
 @Composable
@@ -36,7 +37,7 @@ fun KuyaYanaNavigationBar(
             )},
             label = { Text(
                 stringResource(R.string.inicio),
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.labelLarge
             ) },
             onClick = {
@@ -46,30 +47,42 @@ fun KuyaYanaNavigationBar(
         NavigationBarItem(
             icon = { Icon(
                 painter = painterResource(id = R.drawable.calendar),
-                contentDescription = "Calendario",
+                contentDescription = stringResource(id = R.string.calendario),
                 tint = MaterialTheme.colorScheme.surface
             )},
-            label = { Text("Calendario",color = Color.White) },
+            label = { Text(
+                stringResource(id = R.string.calendario),
+                color = Color.White,
+                style = MaterialTheme.typography.labelLarge
+            ) },
             selected = false,
             onClick = {navController.navigate(KuyaYanaScreen.Calendar.name)}
         )
         NavigationBarItem(
             icon = {Icon(
                 painter = painterResource(id = R.drawable.schedule),
-                contentDescription = "Inicio",
+                contentDescription = stringResource(id = R.string.horario),
                 tint = MaterialTheme.colorScheme.surface
             )},
-            label = { Text("Horario",color = Color.White) },
+            label = { Text(
+                stringResource(id = R.string.horario),
+                color = Color.White,
+                style = MaterialTheme.typography.labelLarge
+            ) },
             selected = false,
             onClick = { navController.navigate(KuyaYanaScreen.Schedule.name) }
         )
         NavigationBarItem(
             icon = {Icon(
                 painter = painterResource(id = R.drawable.subject),
-                contentDescription = "Inicio",
+                contentDescription = stringResource(id = R.string.asignaturas),
                 tint = MaterialTheme.colorScheme.surface
             )},
-            label = { Text("Materias",color = Color.White) },
+            label = { Text(
+                stringResource(id = R.string.asignaturas),
+                color = Color.White,
+                style = MaterialTheme.typography.labelLarge
+            )},
             selected = false,
             onClick = {  navController.navigate(KuyaYanaScreen.Subject.name)}
         )

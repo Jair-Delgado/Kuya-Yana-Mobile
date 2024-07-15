@@ -10,4 +10,8 @@
     <string name="crea_un_profesor">Crea un Profesor</string>
     <string name="cerrar">Cerrar</string>
     <string name="agregar">Agregar</string>
+    <string name="email">Email</string>
+    <string name="ingrese_su_correo_electr_nico">Ingrese su correo electrónico</string>
+    <string name="pass">Contraseña</string>
+    <string name="cerrando_sesion">Cerrando Sesion</string>
 </resources>

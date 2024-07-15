@@ -31,11 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.kuyayana.kuyayana.KuyaYanaScreen
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
 import com.kuyayana.kuyayana.R
 import com.kuyayana.kuyayana.data.models.Event
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 
 @Composable
 fun SubjectScreen(

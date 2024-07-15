@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         setContent {
             KuyaYanaTheme {
-               AppNavHost()
-                //KuyaYanaApp()
+               //AppNavHost()
+                KuyaYanaApp()
             }
         }
     }
