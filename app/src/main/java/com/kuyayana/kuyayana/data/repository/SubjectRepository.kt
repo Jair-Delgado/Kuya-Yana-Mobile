@@ -23,7 +23,7 @@ class SubjectRepository {
                 val subjectData = hashMapOf(
                     "id" to subject.id,
                     "subjectName" to subject.subjectName,
-                    "users" to hashMapOf(uid to true)
+                    "user" to hashMapOf("id" to uid)
                 )
                val documentRef = subjectCollection
                     .add(subjectData)
@@ -45,7 +45,7 @@ class SubjectRepository {
             val uid = auth.currentUser?.uid
             if (uid != null) {
                 val snapshot = subjectCollection.
-                whereEqualTo("users.$uid", true)
+                whereEqualTo("user.id", uid)
                     .get()
                     .await()
                 /*snapshot.documents.map { document ->
