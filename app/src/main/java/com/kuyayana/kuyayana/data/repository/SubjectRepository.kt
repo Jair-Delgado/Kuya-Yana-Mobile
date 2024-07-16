@@ -18,7 +18,7 @@ class SubjectRepository {
             if (uid != null){
                 val subjectData = hashMapOf(
                     "subjectName" to subject.subjectName,
-                    "users" to hashMapOf(uid to true)
+                    "user" to hashMapOf("id" to uid)
                 )
                 subjectCollection
                     .document()
@@ -40,12 +40,12 @@ class SubjectRepository {
         return try {
 
             Log.d("SubjectRepository", "Fetching subjects from Firestore")
-            val uid = auth.currentUser?.uid
+            val id = auth.currentUser?.uid
 
-            if (uid != null) {
+            if (id != null) {
 
                 val snapshot = subjectCollection.
-                whereEqualTo("users.$uid", true)
+                whereEqualTo("user.id", id)
                     .get()
                     .await()
 
