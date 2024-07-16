@@ -13,4 +13,5 @@ enum class KuyaYanaScreen(val title: Int){
     Login(title = ( R.string.inicio)),
     Register(title = ( R.string.inicio)),
     Main(title = ( R.string.inicio)),
+    TeacherList(title = (R.string.lista_teachers))
 }

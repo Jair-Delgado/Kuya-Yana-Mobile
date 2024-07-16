@@ -70,6 +70,7 @@ import com.kuyayana.kuyayana.ui.view.LoginScreen
 import com.kuyayana.kuyayana.ui.view.ScheduleScreen
 import com.kuyayana.kuyayana.ui.view.SubjectScreen
 import com.kuyayana.kuyayana.ui.view.TaskList
+import com.kuyayana.kuyayana.ui.view.TeacherListScreen
 import com.kuyayana.kuyayana.ui.viewmodel.CategoryViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.EventViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
@@ -156,6 +157,9 @@ fun KuyaYanaApp(
                     }
                     composable(route = KuyaYanaScreen.Teacher.name){
                         TeacherScreen(teacherViewModel = TeacherViewModel())
+                    }
+                    composable(route = KuyaYanaScreen.TeacherList.name){
+                       TeacherListScreen()
                     }
                 }
                 Box(

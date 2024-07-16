@@ -74,6 +74,20 @@ fun KuyaYanaNavigationBar(
         )
         NavigationBarItem(
             icon = {Icon(
+                painter = painterResource(id = R.drawable.mail),
+                contentDescription = "teachers",
+                tint = MaterialTheme.colorScheme.surface
+            )},
+            label = { Text(
+                stringResource(id = R.string.horario),
+                color = Color.White,
+                style = MaterialTheme.typography.labelLarge
+            ) },
+            selected = false,
+            onClick = { navController.navigate(KuyaYanaScreen.TeacherList.name) }
+        )
+        NavigationBarItem(
+            icon = {Icon(
                 painter = painterResource(id = R.drawable.subject),
                 contentDescription = stringResource(id = R.string.asignaturas),
                 tint = MaterialTheme.colorScheme.surface
