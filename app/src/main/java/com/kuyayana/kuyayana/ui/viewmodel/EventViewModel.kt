@@ -110,6 +110,4 @@ class EventViewModel: ViewModel() {
             Log.d("EventViewModel", "Mensaje actualizado: ${_message.value}")
         }
     }
-
-
 }

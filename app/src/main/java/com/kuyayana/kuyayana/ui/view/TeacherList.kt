@@ -6,6 +6,5 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun TeacherListScreen(){
-
     Text(text="dsafds")
 }

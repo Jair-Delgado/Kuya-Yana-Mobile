@@ -25,9 +25,11 @@ class TeacherRepository {
                     "teacherLastName" to teacher.teacherLastName,
                     "email" to teacher.email,
                     "phoneNumber" to teacher.phoneNumber,
-                    "users" to hashMapOf(uid to true),
                     "subject" to hashMapOf(
-                        "subjectName" to subject.subjectName
+                        "subjectName" to subject.subjectName,
+                        "user" to hashMapOf(
+                            "id" to uid
+                        )
                     )
                 )
                 teacherCollection
@@ -52,7 +54,7 @@ class TeacherRepository {
             if (uid != null) {
 
                 val snapshot = teacherCollection
-                    .whereEqualTo("users.$uid", true)
+                    .whereEqualTo("subject.user.id", uid)
                     .get()
                     .await()
                 snapshot.toObjects(Teacher::class.java)

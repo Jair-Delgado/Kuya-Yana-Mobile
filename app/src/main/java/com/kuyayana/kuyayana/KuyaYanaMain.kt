@@ -117,7 +117,6 @@ fun KuyaYanaApp(
                         )
                     )
                 }
-
             }
         },
         floatingActionButtonPosition = FabPosition.End,
