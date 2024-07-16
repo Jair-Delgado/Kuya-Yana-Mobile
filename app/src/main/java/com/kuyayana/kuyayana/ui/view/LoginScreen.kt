@@ -71,7 +71,7 @@ fun LoginScreen(
             label = { Text(text = stringResource(R.string.email)) },
             leadingIcon = { Icon(painter = painterResource(id = R.drawable.mail), contentDescription = "email" ) },
             placeholder = { Text(text = stringResource(R.string.ingrese_su_correo_electr_nico))},
-            supportingText = { Text(text = "Email mal escrito")},
+            //supportingText = { Text(text = "Email mal escrito")},
             isError = false,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
@@ -91,7 +91,7 @@ fun LoginScreen(
                 id = R.string.pass
             ) ) },
             placeholder = { Text(text = "Ingrese su contraseña")},
-            supportingText = { Text(text = "Contraseña incorrecta")},
+            //supportingText = { Text(text = "Contraseña incorrecta")},
             isError = false,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(
