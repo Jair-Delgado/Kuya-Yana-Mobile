@@ -16,7 +16,7 @@ class EventRepository {
     private val auth = FirebaseAuth.getInstance()
 
     //Referencias a las colecciones
-    private val eventCollection = db.collection("events")
+    private val eventCollection = db.collection("event")
     private val teacherCollection = db.collection("teacher")
 
     suspend fun addEvent(
@@ -42,12 +42,12 @@ class EventRepository {
                         "email" to teacher.email,
                         "teacherName" to teacher.teacherName,
                         "teacherLastName" to teacher.teacherLastName,
-                        "phoneNumber" to teacher.phoneNumber
+                        "phoneNumber" to teacher.phoneNumber,
+                        "subject" to hashMapOf(
+                            "subjectName" to subject.subjectName,
+                            "user" to hashMapOf("id" to uid)
+                        ),
                     ),
-                    "subject" to hashMapOf(
-                        "subjectName" to subject.subjectName
-                    ),
-                    "user" to hashMapOf(uid to true)
                 )
                 //Guarda la info de eventData en el documento
                 val documentReference =eventCollection
@@ -70,7 +70,7 @@ class EventRepository {
             if (uid != null){
                 val snapshot = eventCollection
                     //verifica que en la coleccion haya un campo users y este este en true
-                    .whereEqualTo("user.$uid",true)
+                    .whereEqualTo("teacher.subject.user.id",uid)
                     .get()
                     .await()
                 snapshot.toObjects(Event::class.java)
