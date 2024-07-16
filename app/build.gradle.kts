@@ -33,6 +33,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -86,6 +87,15 @@ dependencies {
     // For  Firebase Authentication and Cloud Firestore
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
+
+    //implementation ("com.kizitonwose.calendar:compose:1.0.0")
+    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // The view calendar library
+    implementation ("com.kizitonwose.calendar:view:2.0.1")
+
+    // The compose calendar library
+    implementation ("com.kizitonwose.calendar:compose:2.0.1")
 
     /*implementation("com.google.android.gms:play-services-auth:20.2.0")
     implementation("com.google.api-client:google-api-client-android:1.32.1")

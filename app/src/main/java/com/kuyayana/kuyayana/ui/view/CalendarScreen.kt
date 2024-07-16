@@ -1,171 +1,91 @@
 package com.kuyayana.kuyayana.ui.view
 
-import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.foundation.clickable
+
+
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.firestore.DocumentReference
-import com.kuyayana.kuyayana.data.models.Subject
-import com.kuyayana.kuyayana.data.models.Teacher
-import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
-import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
+import com.kizitonwose.calendar.compose.WeekCalendar
+import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
+import com.kizitonwose.calendar.core.WeekDay
+import com.kizitonwose.calendar.core.atStartOfMonth
+import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
+import com.kuyayana.kuyayana.ui.viewmodel.CalendarViewModel
+import java.time.LocalDate
+import java.time.YearMonth
 
 
-/*
-* Vista del calendario
-* */
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CalendarScreen ( ){
-    Column {
-        Text(text = "Calendario")
+fun CalendarScreen(viewModel: CalendarViewModel = viewModel()){
+    val events by viewModel.eventos.observeAsState(initial = emptyList())
+
+    val currentDate = remember{LocalDate.now()}
+    val currentMonth = remember { YearMonth.now() }
+    val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
+    //val calendarState = rememberCalendarState(currentMonth)
+    val startDate = remember { currentMonth.minusMonths(100).atStartOfMonth() } // Adjust as needed
+    val endDate = remember { currentMonth.plusMonths(100).atEndOfMonth() } // Adjust as needed
+
+
+    val state = rememberWeekCalendarState(
+        startDate = startDate,
+        endDate = endDate,
+        firstVisibleWeekDate = currentDate,
+        firstDayOfWeek = firstDayOfWeek
+    )
+
+    WeekCalendar(
+        state = state,
+        dayContent = { Day(it) }
+    )
+
+
+}
+/*@Composable
+fun DayContent(day: CalendarDay, events: List<Event>){
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+    ){
+        Text(text = day.date.dayOfMonth.toString())
+        if (events.isNotEmpty()){
+            Box(modifier = Modifier
+                //.size(8.dp)
+                .background(Color.Red, CircleShape)
+                .align(Alignment.BottomEnd)
+            )
+        }
     }
 }
-
-
-
+@Composable
+fun MonthHeader(month: YearMonth){
+    Text(
+        text = "${month.month.name.toLowerCase().capitalize()} ${month.year}",
+        modifier = Modifier
+            .padding(16.dp)
+    )
+}*/
+@Composable
+fun Day(day: WeekDay) {
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f), // This is important for square sizing!
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = day.date.dayOfMonth.toString())
+    }
+}
 
 @Preview
 @Composable
 fun CalendarPreview(){
     CalendarScreen()
 }
-
-
-/*@Composable
-fun CreateTeacherScreen(
-    teacherViewModel: TeacherViewModel = viewModel()
-) {
-    var email by remember { mutableStateOf("") }
-    var teacherName by remember { mutableStateOf("") }
-    var teacherLastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-
-    var selectedSubject by remember { mutableStateOf<Subject?>(null) }
-
-    val subjects by teacherViewModel.subjects.collectAsState()
-    val teachers by teacherViewModel.teachers.collectAsState()
-
-    LaunchedEffect(teachers) {
-        Log.d("TeacherScreen", "Teachers: $teachers")
-    }
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.padding(vertical = 8.dp))
-        OutlinedTextField(
-            value = teacherName,
-            onValueChange = { teacherName = it },
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.padding(vertical = 8.dp))
-        OutlinedTextField(
-            value = teacherLastName,
-            onValueChange = { teacherLastName = it },
-            label = { Text("Apellido") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.padding(vertical = 8.dp))
-        OutlinedTextField(
-            value = phoneNumber,
-            onValueChange = { phoneNumber = it },
-            label = { Text("Teléfono") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.padding(vertical = 8.dp))
-
-        var expanded by remember { mutableStateOf(false) }
-        Box {
-            OutlinedTextField(
-                value = selectedSubject?.subjectName ?: "Seleccionar Asignatura",
-                onValueChange = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expanded = true },
-                enabled = false,
-                readOnly = true,
-                label = { Text("Asignatura") }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-
-            ) {
-                subjects.forEach { subject ->
-                    DropdownMenuItem(
-                        text = {Text(subject.subjectName)},
-                        onClick = {
-                            selectedSubject = subject
-                            expanded = false
-
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(Modifier.padding(vertical = 16.dp))
-        Button(
-            onClick = {
-                if (selectedSubject != null) {
-                    val newTeacher = Teacher(
-                        email = email,
-                        teacherName = teacherName,
-                        teacherLastName = teacherLastName,
-                        phoneNumber = phoneNumber,
-                        //subject = selectedSubject!!.subjectName
-                    )
-                    teacherViewModel.createTeacher(
-                        newTeacher,
-                        selectedSubject!!
-                    )
-                    email = ""
-                    teacherName = ""
-                    teacherLastName = ""
-                    phoneNumber = ""
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Crear Profesor")
-        }
-
-        LazyColumn {
-            items(teachers){ teacher ->
-                Text(text = teacher.teacherName)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-    }
-}*/
-

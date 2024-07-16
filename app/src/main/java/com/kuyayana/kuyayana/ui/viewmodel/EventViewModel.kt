@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
 
@@ -29,6 +30,9 @@ class EventViewModel: ViewModel() {
 
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events : StateFlow<List<Event>> = _events
+
+    /*private val _eventos = MutableLiveData<Map<LocalDate, List<String>>>()
+    val eventos : LiveData<Map<LocalDate, List<String>>> get()=_eventos*/
 
     private val _subjects = MutableStateFlow<List<Subject>>(emptyList())
     val subjects :StateFlow<List<Subject>> = _subjects
@@ -106,5 +110,6 @@ class EventViewModel: ViewModel() {
             Log.d("EventViewModel", "Mensaje actualizado: ${_message.value}")
         }
     }
+
 
 }
