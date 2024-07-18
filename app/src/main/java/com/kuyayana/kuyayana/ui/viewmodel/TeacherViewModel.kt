@@ -60,4 +60,16 @@ class TeacherViewModel: ViewModel() {
             _subjects.value = subjectRepository.getSubjects()
         }
     }
+    fun deleteTeacher(teacher: Teacher){
+        viewModelScope.launch {
+            try {
+                Log.d("TeacherViewModel", "Deleting teacher ")
+                repository.deleteTeacher(teacher)
+                Log.d("TeacherViewModel", "Teacher deleted successfully")
+                getSubjects() // Actualiza la lista de teachers después de la eliminación
+            } catch (e: Exception) {
+                Log.e("TeacherViewModel", "Error deleting Teacher", e)
+            }
+        }
+    }
 }

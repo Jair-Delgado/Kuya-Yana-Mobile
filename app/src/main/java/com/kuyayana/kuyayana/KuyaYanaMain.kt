@@ -158,7 +158,9 @@ fun KuyaYanaApp(
                         TeacherScreen(teacherViewModel = TeacherViewModel())
                     }
                     composable(route = KuyaYanaScreen.TeacherList.name){
-                       TeacherListScreen()
+                       TeacherListScreen(
+                           teacherViewModel = TeacherViewModel()
+                       )
                     }
                 }
                 Box(

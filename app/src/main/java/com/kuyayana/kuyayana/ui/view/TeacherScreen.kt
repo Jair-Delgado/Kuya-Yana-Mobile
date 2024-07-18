@@ -118,7 +118,7 @@ fun TeacherScreen(
                         teacherName = teacherName,
                         teacherLastName = teacherLastName,
                         phoneNumber = phoneNumber,
-                        //subject = selectedSubject!!.subjectName
+                        subject = selectedSubject
                     )
                     teacherViewModel.createTeacher(
                         newTeacher,

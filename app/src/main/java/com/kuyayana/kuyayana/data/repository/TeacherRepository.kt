@@ -21,6 +21,7 @@ class TeacherRepository {
             val uid = auth.currentUser?.uid
             if (uid != null){
                 val teacherData = hashMapOf(
+
                     "teacherName" to teacher.teacherName,
                     "teacherLastName" to teacher.teacherLastName,
                     "email" to teacher.email,
@@ -46,7 +47,7 @@ class TeacherRepository {
             Log.e("TeacherRepository", "Error adding a teacher", e)
         }
     }
-    suspend fun getTeachers(): List<Teacher> {
+    /*suspend fun getTeachers(): List<Teacher> {
         return try {
 
             Log.d("TeacherRepository", "Fetching teachers from Firestore")
@@ -67,6 +68,44 @@ class TeacherRepository {
             Log.e("TeacherRepository", "Error getting teachers", e)
             emptyList()
 
+        }
+    }*/
+    suspend fun getTeachers(): List<Teacher> {
+        val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
+        val snapshot = teacherCollection.whereEqualTo("subject.user.id", uid).get().await()
+        return snapshot.documents.mapNotNull { document ->
+            val teacherName = document.getString("teacherName") ?: return@mapNotNull null
+            val teacherLastName = document.getString("teacherLastName") ?: return@mapNotNull null
+            val email = document.getString("email") ?: return@mapNotNull null
+            val phoneNumber = document.getString("phoneNumber") ?: return@mapNotNull null
+
+            val subjectMap = document.get("subject") as? Map<String, Any>
+            val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
+            val userMap = subjectMap?.get("user") as? Map<String, Any>
+            val userId = userMap?.get("id") as? String ?: return@mapNotNull null
+
+            val subject = Subject(subjectName, userId)
+            Teacher(teacherName, teacherLastName, email, phoneNumber, subject)
+        }
+    }
+
+    suspend fun deleteTeacher(teacher: Teacher) {
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            // Suponiendo que el nombre es único y se puede usar para buscar el documento
+            val querySnapshot = teacherCollection
+                .whereEqualTo("teacherName", teacher.teacherName)
+                .get()
+                .await()
+
+            if (!querySnapshot.isEmpty) {
+                val document = querySnapshot.documents[0]
+                document.reference.delete().await()
+            } else {
+                Log.e("TeacherRepository", "Error: No teacher found with the given criteria")
+            }
+        } else {
+            Log.e("TeacherRepository", "Error: User not authenticated")
         }
     }
 }
