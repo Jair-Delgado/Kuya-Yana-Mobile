@@ -79,12 +79,12 @@ fun KuyaYanaNavigationBar(
                 tint = MaterialTheme.colorScheme.surface
             )},
             label = { Text(
-                stringResource(id = R.string.horario),
+                stringResource(id = R.string.Calculator),
                 color = Color.White,
                 style = MaterialTheme.typography.labelLarge
             ) },
             selected = false,
-            onClick = { navController.navigate(KuyaYanaScreen.TeacherList.name) }
+            onClick = { navController.navigate(KuyaYanaScreen.Calculator.name) }
         )
         NavigationBarItem(
             icon = {Icon(

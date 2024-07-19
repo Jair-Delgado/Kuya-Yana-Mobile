@@ -15,4 +15,6 @@
     <string name="pass">Contraseña</string>
     <string name="cerrando_sesion">Cerrando Sesion</string>
     <string name="lista_teachers">Lista teachers</string>
+    <string name="Calculator">Calculadora</string>
+
 </resources>

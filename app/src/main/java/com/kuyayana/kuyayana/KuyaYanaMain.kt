@@ -60,6 +60,7 @@ import com.kuyayana.kuyayana.data.models.Category
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.repository.TeacherRepository
 import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
+import com.kuyayana.kuyayana.ui.view.CalculatorScreen
 import com.kuyayana.kuyayana.ui.view.CalendarScreen
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaNavigationBar
 import com.kuyayana.kuyayana.ui.view.appBars.KuyaYanaTopAppBar
@@ -161,6 +162,9 @@ fun KuyaYanaApp(
                        TeacherListScreen(
                            teacherViewModel = TeacherViewModel()
                        )
+                    }
+                    composable(route = KuyaYanaScreen.Calculator.name){
+                        CalculatorScreen()
                     }
                 }
                 Box(
