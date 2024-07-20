@@ -8,39 +8,61 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -77,153 +99,195 @@ import com.kuyayana.kuyayana.ui.viewmodel.EventViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.auth.AuthViewModel
+import kotlinx.coroutines.launch
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KuyaYanaApp(
     navController: NavHostController = rememberNavController(),
-    //navController: NavHostController,
     authViewModel: AuthViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    var visible by remember { mutableStateOf(true) }
-    var isOverlayVisible by remember { mutableStateOf(false) }
-    var expanded by remember { mutableStateOf(true) }
+    val currentScreen = KuyaYanaScreen.valueOf(backStackEntry?.destination?.route ?: KuyaYanaScreen.TaskList.name)
 
-    //val categories by categoryViewModel.categories.collectAsState()
-    val currentScreen =
-        KuyaYanaScreen.valueOf(backStackEntry?.destination?.route ?: KuyaYanaScreen.TaskList.name)
-
-    Scaffold(
-        topBar = {
-            KuyaYanaTopAppBar(
-                currentScreen = currentScreen,
-                authViewModel = AuthViewModel(),
-                navController = navController
-            )
-        },
-        bottomBar = {
-            KuyaYanaNavigationBar(navController)
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { expanded = !expanded },
-                containerColor = MaterialTheme.colorScheme.primary
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(250.dp) // Ajusta el ancho del menú lateral
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp)
             ) {
-                Crossfade(targetState = expanded, label = "") { expanded->
-                    Icon(
-                        if (expanded) Icons.Filled.Add else Icons.Filled.Clear,
-                        contentDescription = if (expanded) stringResource(R.string.cerrar) else stringResource(
-                            R.string.agregar
-                        )
-                    )
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.logo_transparent), // Cambia esto por tu logo
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .size(width = 300.dp, height = 300.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))//
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Kuyayana",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    label = { Text("Lista de Profesores") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(KuyaYanaScreen.TeacherList.name)
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.DateRange, contentDescription = null) },
+                    label = { Text("Calendario") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(KuyaYanaScreen.Schedule.name)
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                    label = { Text("Materias") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(KuyaYanaScreen.Subject.name)
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
+                    label = { Text("Cerrar Sesión") },
+                    selected = false,
+                    onClick = {
+                        authViewModel.logout()
+                        navController.navigate(KuyaYanaScreen.Login.name)
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
             }
         },
-        floatingActionButtonPosition = FabPosition.End,
-        content = { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                NavHost(
-                    navController = navController,
-                    startDestination = KuyaYanaScreen.TaskList.name,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    composable(route = KuyaYanaScreen.TaskList.name) {
-                        TaskList(eventViewModel = EventViewModel())
-                    }
-                    composable(route = KuyaYanaScreen.Calendar.name) {
-                        CalendarScreen()
-                        //CreateTeacherScreen(teacherViewModel = TeacherViewModel())
-                    }
-                    composable(route = KuyaYanaScreen.Schedule.name) {
-                        ScheduleScreen()
-                    }
-                    composable(route = KuyaYanaScreen.Subject.name) {
-                        SubjectScreen(
-                            navController,
-                            subjectViewModel = SubjectViewModel()
-                        )
-                    }
-                    composable(route = KuyaYanaScreen.Event.name){
-                        EventsScreen(
-                            eventViewModel = EventViewModel(),
-                            categoryName = Category()
-                        )
-                    }
-                    composable(route = KuyaYanaScreen.Teacher.name){
-                        TeacherScreen(teacherViewModel = TeacherViewModel())
-                    }
-                    composable(route = KuyaYanaScreen.TeacherList.name){
-                       TeacherListScreen(
-                           teacherViewModel = TeacherViewModel()
-                       )
-                    }
-                    composable(route = KuyaYanaScreen.Calculator.name){
-                        CalculatorScreen()
-                    }
-                }
-                Box(
-                    modifier = Modifier
-                ){
-                    AnimatedVisibility(
-                        visible = !expanded,
-                        enter = scaleIn(),
-                        exit = scaleOut()
+        content = {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            titleContentColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        title = {
+                            Text(stringResource(currentScreen.title))
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    if (drawerState.isClosed) {
+                                        drawerState.open()
+                                    } else {
+                                        drawerState.close()
+                                    }
+                                }
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Localized description",
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { /* do something */ }) {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "Localized description",
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                            IconButton(onClick = {
+                                authViewModel.logout()
+                                navController.navigate(KuyaYanaScreen.Login.name)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.ExitToApp,
+                                    contentDescription = "Localized description",
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    )
+                },
+                bottomBar = {
+                    KuyaYanaNavigationBar(navController)
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { /* Toggle some state if needed */ },
+                        containerColor = MaterialTheme.colorScheme.primary
                     ) {
-
-                        Column(
-                            modifier = Modifier
-                                .padding(vertical = 16.dp, horizontal = 8.dp)
-                                .animateContentSize(),
-                            horizontalAlignment = Alignment.End
-                        ) {
-                            ElevatedButton(
-                                onClick = {
-                                    navController.navigate(KuyaYanaScreen.Event.name)
-                                    expanded = !expanded
-                                },
-                                modifier = modifier
-                                    .padding(vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = "Evento",
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Icon(
-                                    painter = painterResource(id = R.drawable.event),
-                                    contentDescription = "Localized description",
-                                    tint = MaterialTheme.colorScheme.tertiary,
-                                )
-                            }
-                            ElevatedButton(
-                                onClick = { navController.navigate(KuyaYanaScreen.Teacher.name)},
-                                modifier = modifier
-                                    .padding(vertical = 16.dp)
-
-                            ) {
-                                Text(
-                                    text = "Clase",
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Icon(
-                                    painter = painterResource(id = R.drawable.class_icon),
-                                    contentDescription = "Localized description",
-                                    tint = MaterialTheme.colorScheme.tertiary
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(56.dp))
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "Add"
+                        )
+                    }
+                },
+                floatingActionButtonPosition = FabPosition.End,
+                content = { paddingValues ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = KuyaYanaScreen.TaskList.name,
+                        Modifier.padding(paddingValues)
+                    ) {
+                        composable(route = KuyaYanaScreen.TaskList.name) {
+                            TaskList(eventViewModel = EventViewModel())
+                        }
+                        composable(route = KuyaYanaScreen.Calendar.name) {
+                            CalendarScreen()
+                        }
+                        composable(route = KuyaYanaScreen.Schedule.name) {
+                            ScheduleScreen()
+                        }
+                        composable(route = KuyaYanaScreen.Subject.name) {
+                            SubjectScreen(
+                                navController,
+                                subjectViewModel = SubjectViewModel()
+                            )
+                        }
+                        composable(route = KuyaYanaScreen.Event.name) {
+                            EventsScreen(
+                                eventViewModel = EventViewModel(),
+                                categoryName = Category()
+                            )
+                        }
+                        composable(route = KuyaYanaScreen.Teacher.name) {
+                            TeacherScreen(teacherViewModel = TeacherViewModel())
+                        }
+                        composable(route = KuyaYanaScreen.TeacherList.name) {
+                            TeacherListScreen(
+                                teacherViewModel = TeacherViewModel()
+                            )
+                        }
+                        composable(route = KuyaYanaScreen.Calculator.name) {
+                            CalculatorScreen()
                         }
                     }
                 }
-            }
+            )
         }
     )
 }
-

@@ -58,24 +58,11 @@ fun KuyaYanaNavigationBar(
             selected = false,
             onClick = {navController.navigate(KuyaYanaScreen.Calendar.name)}
         )
-        NavigationBarItem(
-            icon = {Icon(
-                painter = painterResource(id = R.drawable.schedule),
-                contentDescription = stringResource(id = R.string.horario),
-                tint = MaterialTheme.colorScheme.surface
-            )},
-            label = { Text(
-                stringResource(id = R.string.horario),
-                color = Color.White,
-                style = MaterialTheme.typography.labelLarge
-            ) },
-            selected = false,
-            onClick = { navController.navigate(KuyaYanaScreen.Schedule.name) }
-        )
+
         NavigationBarItem(
             icon = {Icon(
                 painter = painterResource(id = R.drawable.mail),
-                contentDescription = "teachers",
+                contentDescription = "Calculadora",
                 tint = MaterialTheme.colorScheme.surface
             )},
             label = { Text(
@@ -85,20 +72,6 @@ fun KuyaYanaNavigationBar(
             ) },
             selected = false,
             onClick = { navController.navigate(KuyaYanaScreen.Calculator.name) }
-        )
-        NavigationBarItem(
-            icon = {Icon(
-                painter = painterResource(id = R.drawable.subject),
-                contentDescription = stringResource(id = R.string.asignaturas),
-                tint = MaterialTheme.colorScheme.surface
-            )},
-            label = { Text(
-                stringResource(id = R.string.asignaturas),
-                color = Color.White,
-                style = MaterialTheme.typography.labelLarge
-            )},
-            selected = false,
-            onClick = {  navController.navigate(KuyaYanaScreen.Subject.name)}
         )
     }
 }
