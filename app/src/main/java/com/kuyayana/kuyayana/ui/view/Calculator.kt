@@ -39,6 +39,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
@@ -69,20 +70,16 @@ import java.util.Objects
 fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
     val subjects by teacherViewModel.subjects.collectAsState()
     val records by teacherViewModel.records.collectAsState()
-    var selectedRecordInt: Int? = 0
-    var selectedRecord by remember { mutableStateOf( records.firstOrNull()) }
+    var selectedRecord by remember { mutableStateOf(records.firstOrNull()?.also { if (it.sections.isEmpty()) it.sections.add(Section()) }) }
 
-    var notes by remember { mutableStateOf(listOf<Float>()) }
     var newNote by remember { mutableStateOf("") }
     var auxPercentage by remember { mutableStateOf("") }
 
-    var percentage by remember { mutableStateOf("") }
-    var percentages by remember { mutableStateOf(mutableListOf("")) }
-    var average by remember { mutableStateOf<Float?>(null) }
-    var calculatedPercentage by remember { mutableStateOf<Float?>(null) }
+    var percentages by remember { mutableStateOf(mutableListOf<String>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     var showResultDialog by remember { mutableStateOf(false) }
+    var showPercentage by remember { mutableStateOf(true) } // Variable to select percentage or average
 
     Column(
         modifier = Modifier
@@ -106,133 +103,144 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
                 onDismissRequest = { expanded = false }
             ) {
                 records.forEach { record ->
-                    var i = 0
                     DropdownMenuItem(
                         text = { Text(record.subject?.subjectName ?: "error") },
                         onClick = {
-                            selectedRecord = record
-                            selectedRecordInt = selectedRecord?.sections?.size
+                            selectedRecord = record.also { if (it.sections.isEmpty()) it.sections.add(Section()) }
                             percentages = mutableListOf()
-                            selectedRecord?.sections?.forEach{section->
+                            selectedRecord?.sections?.forEach { section ->
                                 percentages.add(section.percentage.toString())
                             }
                             expanded = false
                         }
                     )
-                    i = i + 1
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
+        // RadioGroup for selecting percentage or average
+        Column {
+            Text("Mostrar como: ", modifier = Modifier.padding(bottom = 8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = showPercentage,
+                    onClick = { showPercentage = true }
+                )
+                Text("Porcentaje", modifier = Modifier.padding(end = 8.dp))
+                RadioButton(
+                    selected = !showPercentage,
+                    onClick = { showPercentage = false }
+                )
+                Text("Promedio")
+            }
+        }
 
-
-
+        Spacer(modifier = Modifier.height(8.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(8.dp)
                 .verticalScroll(rememberScrollState())
-        ){
-            var i = 0
-            selectedRecord?.sections?.forEach { section->
-                i= i+1
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Sección"+ (i), modifier = Modifier.padding(4.dp))
-                    Text("%"+ section.percentage, modifier = Modifier.padding(4.dp))
-                    IconButton(onClick = {
-                        selectedRecord?.sections?.remove(section)
-                    },modifier = Modifier.padding(4.dp)) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Quitar Sección")
-                    }
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-
-                    OutlinedTextField(
-                        value = newNote,
-                        onValueChange = {newNote= it
-                            Log.d(TAG, "CalculatorScreen2: "+ newNote)},
-                        label = { Text("Nota") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .border(1.dp, Color.Gray)
-                            .padding(8.dp),
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                    )
-                    IconButton(onClick = {
-                        Log.d(TAG, "CalculatorScreen: "+ newNote)
-                        section.grades.add(newNote.toDouble())
-                    }) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "Añadir Nota")
+        ) {
+            selectedRecord?.sections?.forEachIndexed { index, section ->
+                Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Sección ${index + 1}", modifier = Modifier.padding(4.dp))
+                        Text("%${section.percentage}", modifier = Modifier.padding(4.dp))
+                        IconButton(onClick = {
+                            selectedRecord?.sections?.remove(section)
+                        }, modifier = Modifier.padding(4.dp)) {
+                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Quitar Sección")
+                        }
+                        IconButton(onClick = {
+                            selectedRecord?.sections?.add(Section())
+                        }, modifier = Modifier.padding(4.dp)) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar Sección")
+                        }
                     }
 
-                }
-
-                LazyRow(
-                    modifier = Modifier
-                        // Allow space to expand and scroll
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth()
-                        .scrollable(
-                            orientation = Orientation.Horizontal,
-                            state = rememberScrollState()
-                        ),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(section.grades) { grade ->
-                        Box(
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedTextField(
+                            value = newNote,
+                            onValueChange = { newNote = it },
+                            label = { Text("Nota") },
                             modifier = Modifier
-                                .size(80.dp)
+                                .weight(1f)
                                 .border(1.dp, Color.Gray)
                                 .padding(8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text("Nota: ${grade}", textAlign = TextAlign.Center)
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                        )
+                        IconButton(onClick = {
+                            if (newNote.isNotEmpty()) {
+                                section.grades.add(newNote.toDouble())
+                                newNote = ""
+                            }
+                        }) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = "Añadir Nota")
+                        }
+                    }
 
+                    LazyRow(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                            .scrollable(
+                                orientation = Orientation.Horizontal,
+                                state = rememberScrollState()
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(section.grades) { grade ->
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .border(1.dp, Color.Gray)
+                                    .padding(8.dp)
+                                    .clickable {
+                                        section.grades.remove(grade)
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("Nota: $grade", textAlign = TextAlign.Center)
                             }
                         }
                     }
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = {
-                        section.grades.removeAt(section.grades.size-1)
-                    }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar Nota")
-                    }
 
-
-                    OutlinedTextField(
-                        value = auxPercentage,
-                        onValueChange = { auxPercentage = it},
-                        label = { Text("%") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .border(1.dp, Color.Gray)
-                            .padding(8.dp),
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                    )
-                    IconButton(onClick = {
-                        if (auxPercentage.length > 0){
-                            section.percentage = auxPercentage.toFloat()
-                            Log.d(TAG, "CalculatorScreen3: "+ section.percentage)
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = {
+                            if (section.grades.isNotEmpty()) {
+                                section.grades.removeAt(section.grades.size - 1)
+                            }
+                        }) {
+                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar Nota")
                         }
 
-                    }) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "Eliminar Nota")
+                        OutlinedTextField(
+                            value = auxPercentage,
+                            onValueChange = { auxPercentage = it },
+                            label = { Text("%") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .border(1.dp, Color.Gray)
+                                .padding(8.dp),
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                        )
+                        IconButton(onClick = {
+                            if (auxPercentage.isNotEmpty()) {
+                                section.percentage = auxPercentage.toFloat()
+                                auxPercentage = ""
+                            }
+                        }) {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "Actualizar Porcentaje")
+                        }
                     }
                 }
-
-
             }
 
             Row(
@@ -243,22 +251,12 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
                     onClick = {
                         try {
                             selectedRecord?.finalGrade = 0.0
-                            selectedRecord?.sections?.forEach{section ->
-                                section.sectionGrade = 0
-                                section.grades.forEach{grade->
-                                    section.sectionGrade = section.sectionGrade.toDouble() + grade
-                                }
-                                section.sectionGrade = section.sectionGrade.toDouble() / section.grades.size
-                                section.sectionGrade = (section.sectionGrade.toDouble() * section.percentage.toDouble()) / 100
-                                Log.d(TAG, "sectionGr: "+ section.sectionGrade)
-                                var aux: Double?
-                                aux = selectedRecord?.finalGrade?.plus(section.sectionGrade.toDouble())
-                                if (aux != null) {
-                                    selectedRecord?.finalGrade = aux
-                                    Log.d(TAG, "sectionGr: "+ selectedRecord?.finalGrade)
-                                }
+                            selectedRecord?.sections?.forEach { section ->
+                                val sectionAverage = if (section.grades.isNotEmpty()) section.grades.average() else 0.0
+                                section.sectionGrade = (sectionAverage * section.percentage.toDouble()) / 100
+                                selectedRecord?.finalGrade = (selectedRecord?.finalGrade ?: 0.0) + section.sectionGrade.toDouble()
                             }
-                            showResultDialog = true // Show dialog with results
+                            showResultDialog = true
                         } catch (e: Exception) {
                             errorMessage = "Error en el cálculo"
                         }
@@ -270,7 +268,6 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
                     onClick = {
                         try {
                             teacherViewModel.updateRecord(selectedRecord)
-
                         } catch (e: Exception) {
                             errorMessage = "Error al guardar"
                         }
@@ -279,21 +276,27 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
                     Text("Guardar")
                 }
             }
-            // Dialog for showing results
+
             if (showResultDialog) {
                 AlertDialog(
                     onDismissRequest = { showResultDialog = false },
                     title = { Text("Resultados") },
                     text = {
-
                         Column {
-                            var i = 0
-                            selectedRecord?.sections?.forEach{section->
-                                i = i+1
-                                Text("Sección ${i}: ${String.format("%.2f", section.sectionGrade)}", fontSize = 20.sp)
-
+                            selectedRecord?.sections?.forEachIndexed { index, section ->
+                                val displayValue = if (showPercentage) {
+                                    section.sectionGrade
+                                } else {
+                                    section.grades.average()
+                                }
+                                Text("Sección ${index + 1}: ${String.format("%.2f", displayValue)}", fontSize = 20.sp)
                             }
-                            Text("Total: ${String.format("%.2f", selectedRecord?.finalGrade)}", fontSize = 20.sp)
+                            val totalValue = if (showPercentage) {
+                                selectedRecord?.finalGrade
+                            } else {
+                                selectedRecord?.sections?.flatMap { it.grades }?.average() ?: 0.0
+                            }
+                            Text("Total: ${String.format("%.2f", totalValue)}", fontSize = 20.sp)
                         }
                     },
                     confirmButton = {
@@ -303,160 +306,8 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
                             Text("Aceptar")
                         }
                     }
-
-
                 )
             }
         }
-
-
-
-
-
-
-
-
-        // Input for new note
-    /*    Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
-                value = newNote,
-                onValueChange = { newNote = it },
-                label = { Text("Nota") },
-                modifier = Modifier
-                    .weight(1f)
-                    .border(1.dp, Color.Gray)
-                    .padding(8.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                onClick = {
-                    val noteValue = newNote.toFloatOrNull()
-                    if (noteValue != null) {
-                        notes = notes + noteValue
-                        newNote = ""
-                        errorMessage = null
-                    } else {
-                        errorMessage = "Nota inválida"
-                    }
-                }
-            ) {
-                Text("Agregar Nota")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Display notes in squares
-        LazyRow(
-            modifier = Modifier
-                .weight(1f) // Allow space to expand and scroll
-                .padding(vertical = 8.dp)
-                .fillMaxWidth()
-                .scrollable(orientation = Orientation.Horizontal, state = rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(notes) { note ->
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .border(1.dp, Color.Gray)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Nota: ${note}", textAlign = TextAlign.Center)
-                        IconButton(onClick = {
-                            notes = notes - note
-                        }) {
-                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar Nota")
-                        }
-                    }
-                }
-            }
-        }
-
-        // Input for percentage
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
-                value = percentage,
-                onValueChange = { percentage = it },
-                label = { Text("Porcentaje") },
-                modifier = Modifier
-                    .weight(1f)
-                    .border(1.dp, Color.Gray)
-                    .padding(8.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Calculate button
-        Button(
-            onClick = {
-                try {
-                    val avg = if (notes.isNotEmpty()) notes.average().toFloat() else 0f
-                    val perc = percentage.toFloatOrNull() ?: 0f
-                    average = avg
-                    calculatedPercentage = avg * perc / 100
-                    errorMessage = null
-                    showResultDialog = true // Show dialog with results
-                } catch (e: Exception) {
-                    errorMessage = "Error en el cálculo"
-                }
-            }
-        ) {
-            Text("Calcular")
-        }
-
-        // Display error message
-        errorMessage?.let {
-            Text(it, color = Color.Red, fontSize = 16.sp)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Reset button
-        Button(onClick = {
-            notes = emptyList()
-            newNote = ""
-            percentage = ""
-            average = null
-            calculatedPercentage = null
-            errorMessage = null
-        }) {
-            Text("Reiniciar")
-        }
-    }
-
-    // Dialog for showing results
-    if (showResultDialog) {
-        AlertDialog(
-            onDismissRequest = { showResultDialog = false },
-            title = { Text("Resultados") },
-            text = {
-                Column {
-                    average?.let {
-                        Text("Promedio: ${String.format("%.2f", it)}", fontSize = 20.sp)
-                    }
-                    calculatedPercentage?.let {
-                        Text("Nota Calculada: ${String.format("%.2f", it)}", fontSize = 20.sp)
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = { showResultDialog = false }
-                ) {
-                    Text("Aceptar")
-                }
-            }
-        )*/
     }
 }
-
-
