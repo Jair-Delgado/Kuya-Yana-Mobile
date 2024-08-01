@@ -46,6 +46,7 @@ fun EventsScreen (
     var description by remember { mutableStateOf("")}
     var end by remember { mutableStateOf("")}
     var start by remember { mutableStateOf("")}
+    var teacher by remember { mutableStateOf(Teacher("","","","",Subject()))}
 
 
     var selectedTeacher by remember { mutableStateOf<Teacher?>(null)}
@@ -191,7 +192,8 @@ fun EventsScreen (
                         title = title,
                         description = description,
                         start = start,
-                        end = end
+                        end = end,
+                        teacher = teacher
                     )
                     eventViewModel.createEvent(
                         newEvent,

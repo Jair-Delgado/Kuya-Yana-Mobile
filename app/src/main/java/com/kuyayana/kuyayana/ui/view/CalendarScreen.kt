@@ -1,20 +1,34 @@
 package com.kuyayana.kuyayana.ui.view
 
+import android.nfc.Tag
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.relay.compose.ColumnScopeInstanceImpl.weight
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -23,10 +37,16 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.WeekDay
+import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.atStartOfMonth
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
+import com.kuyayana.kuyayana.data.models.Event
+import com.kuyayana.kuyayana.data.models.Subject
+import com.kuyayana.kuyayana.data.models.Teacher
 import com.kuyayana.kuyayana.ui.viewmodel.CalendarViewModel
+import org.intellij.lang.annotations.JdkConstants
+
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -35,9 +55,10 @@ import java.util.Locale
 
 
 @Composable
-fun CalendarScreen(viewModel: CalendarViewModel = viewModel()){
-    val events by viewModel.eventos.observeAsState(initial = emptyList())
-
+fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()){
+    val events by calendarViewModel.eventos.collectAsState()
+    val startEvents = remember{ mutableStateOf(mutableListOf<String>())  }
+    val selectedEvent = remember{ mutableStateOf(Event("","","",Teacher("","","","",Subject()),))  }
     /*val currentDate = remember{LocalDate.now()}
     val currentMonth = remember { YearMonth.now() }
     val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
@@ -45,12 +66,12 @@ fun CalendarScreen(viewModel: CalendarViewModel = viewModel()){
     val startDate = remember { currentMonth.minusMonths(100).atStartOfMonth() } // Adjust as needed
     val endDate = remember { currentMonth.plusMonths(100).atEndOfMonth() } // Adjust as needed*/
 
-
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
     val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
     val firstDayOfWeek = remember { firstDayOfWeekFromLocale() } // Available from the library
-
+    var selectedDate: LocalDate? = LocalDate.now()
+    var showResultDialog = remember { mutableStateOf(false) }
    /* val state = rememberWeekCalendarState(
         startDate = startDate,
         endDate = endDate,
@@ -70,15 +91,53 @@ fun CalendarScreen(viewModel: CalendarViewModel = viewModel()){
         )*/
         HorizontalCalendar(
             state = state,
-            dayContent = { Day(it) },
+            dayContent = { day ->
+                Day(showResultDialog,selectedEvent,startEvents,events,day, isSelected = selectedDate == day.date) { day ->
+                    selectedDate = if (selectedDate == day.date) null else day.date
+                }
+            },
             monthHeader = {month ->
+
+                MonthHeader(month =  month.weekDays.first().map{it.date.month.toString()},month.weekDays.first().map{it.date.year.toString()} )
                 val daysOfWeek = month.weekDays.first().map { it.date.dayOfWeek }
                 DaysOfWeekTitle(daysOfWeek = daysOfWeek())
             }
         )
 
     }
-
+    if (showResultDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showResultDialog.value = false },
+            title = { Text("Clase:") },
+            text = {
+                Column {
+                    Text(
+                        "Titulo: ${selectedEvent.value.title} ",
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        "Materia: ${selectedEvent.value.teacher?.subject?.subjectName} ",
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        "Empieza: ${selectedEvent.value.start.substring(11,16)} ",
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        "Termina: ${selectedEvent.value.end.substring(11,16)} ",
+                        fontSize = 20.sp
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showResultDialog.value = false }
+                ) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
 
 }
 /*@Composable
@@ -97,14 +156,7 @@ fun DayContent(day: CalendarDay, events: List<Event>){
         }
     }
 }
-@Composable
-fun MonthHeader(month: YearMonth){
-    Text(
-        text = "${month.month.name.toLowerCase().capitalize()} ${month.year}",
-        modifier = Modifier
-            .padding(16.dp)
-    )
-}*/
+*/
 /*@Composable
 fun Day(day: WeekDay) {
     Box(
@@ -115,16 +167,65 @@ fun Day(day: WeekDay) {
         Text(text = day.date.dayOfMonth.toString())
     }
 }*/
+@Composable
+fun MonthHeader(month: List<String>,year: List<String>){
+    Text(
+        text = "${month[month.size-1].toString().toLowerCase().capitalize()}-${year[year.size-1]} ",
+        modifier = Modifier
+            .padding(16.dp)
+    )
+}
+
 
 @Composable
-fun Day(day: CalendarDay) {
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f), // This is important for square sizing!
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = day.date.dayOfMonth.toString())
+fun Day(show:MutableState<Boolean>, selectedEvent: MutableState<Event>,auxStarts: MutableState<MutableList<String>>, events: List<Event>,day: CalendarDay,isSelected: Boolean,onClick: (CalendarDay)->Unit) {
+    val dayDate: String = day.date.toString()
+    var i = 0
+    var auxBool  =false
+    events.forEach{
+        i = i + 1
+        var aux = it.start.substring(0,10)
+        auxStarts.value.add(aux)
+        if (aux == dayDate){
+            auxBool = true
+            Box(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clickable(
+                        enabled = true,
+                        onClick = {
+                            onClick(day);
+
+                            selectedEvent.value = it
+                            show.value = true
+                        }
+                    ), // This is important for square sizing!
+                contentAlignment = Alignment.Center,
+
+            ) {
+                Text(text = day.date.dayOfMonth.toString())
+            }
+        } else if(auxBool == false) {
+            Box(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clickable(
+                        enabled = true,
+                        onClick = {
+                            onClick(day);
+
+                        }
+                    ), // This is important for square sizing!
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(text = day.date.dayOfMonth.toString())
+            }
+        }
+
+
     }
+
 }
 @Composable
 fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
