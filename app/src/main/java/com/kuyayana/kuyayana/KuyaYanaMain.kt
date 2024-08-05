@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 
@@ -107,7 +108,9 @@ import kotlinx.coroutines.launch
 fun KuyaYanaApp(
     navController: NavHostController = rememberNavController(),
     authViewModel: AuthViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLogOutClick:() -> Unit
+
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -176,10 +179,12 @@ fun KuyaYanaApp(
                     selected = false,
                     onClick = {
                         authViewModel.logout()
-                        navController.navigate(KuyaYanaScreen.Login.name)
+                        onLogOutClick()
                         scope.launch { drawerState.close() }
                     },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    modifier = Modifier
+                        .padding(NavigationDrawerItemDefaults.ItemPadding)
+                        .clickable {  }
                 )
             }
         },
@@ -221,7 +226,7 @@ fun KuyaYanaApp(
                             }
                             IconButton(onClick = {
                                 authViewModel.logout()
-                                navController.navigate(KuyaYanaScreen.Login.name)
+                                onLogOutClick()
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.ExitToApp,
