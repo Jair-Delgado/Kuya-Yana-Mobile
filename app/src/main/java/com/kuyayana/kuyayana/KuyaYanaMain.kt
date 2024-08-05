@@ -275,7 +275,7 @@ fun KuyaYanaApp(
                             CalendarScreen()
                         }
                         composable(route = KuyaYanaScreen.Schedule.name) {
-                            ScheduleScreen()
+                           CalendarScreen()
                         }
                         composable(route = KuyaYanaScreen.Subject.name) {
                             SubjectScreen(
