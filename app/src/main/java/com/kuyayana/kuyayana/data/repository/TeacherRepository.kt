@@ -71,22 +71,28 @@ class TeacherRepository {
         }
     }*/
     suspend fun getTeachers(): List<Teacher> {
-        val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
-        val snapshot = teacherCollection.whereEqualTo("subject.user.id", uid).get().await()
-        return snapshot.documents.mapNotNull { document ->
-            val teacherName = document.getString("teacherName") ?: return@mapNotNull null
-            val teacherLastName = document.getString("teacherLastName") ?: return@mapNotNull null
-            val email = document.getString("email") ?: return@mapNotNull null
-            val phoneNumber = document.getString("phoneNumber") ?: return@mapNotNull null
+        try {
+            val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
+            val snapshot = teacherCollection.whereEqualTo("subject.user.id", uid).get().await()
+            return snapshot.documents.mapNotNull { document ->
+                val teacherName = document.getString("teacherName") ?: return@mapNotNull null
+                val teacherLastName = document.getString("teacherLastName") ?: return@mapNotNull null
+                val email = document.getString("email") ?: return@mapNotNull null
+                val phoneNumber = document.getString("phoneNumber") ?: return@mapNotNull null
 
-            val subjectMap = document.get("subject") as? Map<String, Any>
-            val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
-            val userMap = subjectMap?.get("user") as? Map<String, Any>
-            val userId = userMap?.get("id") as? String ?: return@mapNotNull null
+                val subjectMap = document.get("subject") as? Map<String, Any>
+                val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
+                val userMap = subjectMap?.get("user") as? Map<String, Any>
+                val userId = userMap?.get("id") as? String ?: return@mapNotNull null
 
-            val subject = Subject(subjectName, userId)
-            Teacher(teacherName, teacherLastName, email, phoneNumber, subject)
+                val subject = Subject(subjectName, userId)
+                Teacher(teacherName, teacherLastName, email, phoneNumber, subject)
+            }
+        }catch (e: Exception){
+            Log.e(TAG, "getTeachers: ",e )
+            return emptyList()
         }
+
     }
 
     suspend fun deleteTeacher(teacher: Teacher) {

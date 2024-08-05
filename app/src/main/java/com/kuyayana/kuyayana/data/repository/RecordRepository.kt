@@ -19,35 +19,42 @@ class RecordRepository {
 
 
     suspend fun getRecords(): List<Record> {
-        val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
-        val snapshot = recordCollection.whereEqualTo("subject.user.id", uid).get().await()
-        return snapshot.documents.mapNotNull { document ->
-            val id = document.id
-            val finalGrade = document.getDouble("finalGrade")as? Double ?: return@mapNotNull null
+        try {
+            val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
+            val snapshot = recordCollection.whereEqualTo("subject.user.id", uid).get().await()
+            return snapshot.documents.mapNotNull { document ->
+                val id = document.id
+                val finalGrade = document.getDouble("finalGrade")as? Double ?: return@mapNotNull null
 
-            val sectionsMap = document.get("sections") as? MutableList<Map<String,Any>> ?: return@mapNotNull null
-            val sections: MutableList<Section> = mutableListOf()
-            sectionsMap.forEach{section->
+                val sectionsMap = document.get("sections") as? MutableList<Map<String,Any>> ?: return@mapNotNull null
+                val sections: MutableList<Section> = mutableListOf()
+                sectionsMap.forEach{section->
 
-                val auxSectionGrade = section.get("sectionGrade") as? Number ?: return@mapNotNull null
-                val auxResults = section.get("showResults") as? Boolean ?: return@mapNotNull null
-                val auxPercentage = section.get("percentage") as? Number ?: return@mapNotNull null
-                val auxGrades = section.get("grades") as? MutableList<Double> ?: return@mapNotNull null
+                    val auxSectionGrade = section.get("sectionGrade") as? Number ?: return@mapNotNull null
+                    val auxResults = section.get("showResults") as? Boolean ?: return@mapNotNull null
+                    val auxPercentage = section.get("percentage") as? Number ?: return@mapNotNull null
+                    val auxGrades = section.get("grades") as? MutableList<Double> ?: return@mapNotNull null
 
-                val auxSection = Section(auxPercentage,auxGrades,auxSectionGrade,auxResults)
-                sections.add(auxSection)
+                    val auxSection = Section(auxPercentage,auxGrades,auxSectionGrade,auxResults)
+                    sections.add(auxSection)
+                }
+
+                val subjectMap = document.get("subject") as? Map<String, Any>
+                val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
+                val userMap = subjectMap?.get("user") as? Map<String, Any>
+                val userId = userMap?.get("id") as? String ?: return@mapNotNull null
+
+                val subject = Subject(subjectName, userId)
+                Log.d(TAG, "getRecords: "+ Record(id,finalGrade, sections, subject))
+                Record(id,finalGrade, sections, subject)
+
             }
 
-            val subjectMap = document.get("subject") as? Map<String, Any>
-            val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
-            val userMap = subjectMap?.get("user") as? Map<String, Any>
-            val userId = userMap?.get("id") as? String ?: return@mapNotNull null
-
-            val subject = Subject(subjectName, userId)
-            Log.d(TAG, "getRecords: "+ Record(id,finalGrade, sections, subject))
-            Record(id,finalGrade, sections, subject)
-
+        }catch (e: Exception){
+            Log.e(TAG, "getRecords: ",e )
+            return emptyList()
         }
+
     }
     suspend fun updateRecord(record : Record?){
         val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")

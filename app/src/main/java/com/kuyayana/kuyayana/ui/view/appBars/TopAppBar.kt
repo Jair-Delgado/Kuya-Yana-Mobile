@@ -78,7 +78,7 @@ fun KuyaYanaTopAppBar(
             }
             IconButton(onClick = {
                 authViewModel.logout()
-                navController.navigate(KuyaYanaScreen.Login.name)
+                navController.navigate(KuyaYanaScreen.Register.name)
                 Log.d("ExitApp","Cerrando Sesion")
             }
             ) {

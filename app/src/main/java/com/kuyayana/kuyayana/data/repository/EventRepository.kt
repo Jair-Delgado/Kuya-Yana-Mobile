@@ -68,58 +68,71 @@ class EventRepository {
     }
 
     suspend fun getEvents(): List<Event> {
-        val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
-        val snapshot = eventCollection.whereEqualTo("teacher.subject.user.id", uid).whereNotEqualTo("eventCategory.categoryName","clase").get().await()
-        return snapshot.documents.mapNotNull { document ->
-            val id = document.id
-            val description = document.get("description")as? String ?: return@mapNotNull null
-            val title = document.get("title")as? String ?: return@mapNotNull null
-            val start = document.get("start")as? String ?: return@mapNotNull null
-            val end = document.get("end")as? String ?: return@mapNotNull null
+        try {
+            val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
+            val snapshot = eventCollection.whereEqualTo("teacher.subject.user.id", uid).whereNotEqualTo("eventCategory.categoryName","clase").get().await()
+            return snapshot.documents.mapNotNull { document ->
+                val id = document.id
+                val description = document.get("description")as? String ?: return@mapNotNull null
+                val title = document.get("title")as? String ?: return@mapNotNull null
+                val start = document.get("start")as? String ?: return@mapNotNull null
+                val end = document.get("end")as? String ?: return@mapNotNull null
 
-            val teacherMap = document.get("teacher") as? Map<String,Any>
-            val teacherName = teacherMap?.get("teacherName") as? String ?: return@mapNotNull  null
-            val email = teacherMap?.get("email") as? String ?: return@mapNotNull  null
-            val phoneNumber = teacherMap?.get("phoneNumber") as? String ?: return@mapNotNull  null
-            val teacherLastName = teacherMap?.get("teacherLastName") as? String ?: return@mapNotNull  null
+                val teacherMap = document.get("teacher") as? Map<String,Any>
+                val teacherName = teacherMap?.get("teacherName") as? String ?: return@mapNotNull  null
+                val email = teacherMap?.get("email") as? String ?: return@mapNotNull  null
+                val phoneNumber = teacherMap?.get("phoneNumber") as? String ?: return@mapNotNull  null
+                val teacherLastName = teacherMap?.get("teacherLastName") as? String ?: return@mapNotNull  null
 
-            val subjectMap = teacherMap.get("subject") as? Map<String, Any>
-            val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
-            val userMap = subjectMap?.get("user") as? Map<String, Any>
-            val userId = userMap?.get("id") as? String ?: return@mapNotNull null
-            val subject = Subject(subjectName, userId)
+                val subjectMap = teacherMap.get("subject") as? Map<String, Any>
+                val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
+                val userMap = subjectMap?.get("user") as? Map<String, Any>
+                val userId = userMap?.get("id") as? String ?: return@mapNotNull null
+                val subject = Subject(subjectName, userId)
 
-            val teacher  =Teacher(teacherName,teacherLastName,email,phoneNumber,subject)
+                val teacher  =Teacher(teacherName,teacherLastName,email,phoneNumber,subject)
 
-            Event(id,title, description, teacher,start,end)
+                Event(id,title, description, teacher,start,end)
 
+            }
+        }catch (e: Exception){
+            Log.e(TAG, "getEvents: ",e )
+            return  emptyList()
         }
+
+
     }
     suspend fun getClass(): List<Event> {
-        val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
-        val snapshot = eventCollection.whereEqualTo("teacher.subject.user.id", uid).whereEqualTo("eventCategory.categoryName","clase").get().await()
-        return snapshot.documents.mapNotNull { document ->
+        try {
+            val uid = auth.currentUser?.uid ?: throw Exception("User not authenticated")
+            val snapshot = eventCollection.whereEqualTo("teacher.subject.user.id", uid).whereEqualTo("eventCategory.categoryName","clase").get().await()
+            return snapshot.documents.mapNotNull { document ->
 
-            val id = document.id
-            val description = document.get("description")as? String ?: return@mapNotNull null
-            val title = document.get("title")as? String ?: return@mapNotNull null
-            val start = document.get("start")as? String ?: return@mapNotNull null
-            val end = document.get("end")as? String ?: return@mapNotNull null
-            val teacherMap = document.get("teacher") as? Map<String,Any>
-            val teacherName = teacherMap?.get("teacherName") as? String ?: return@mapNotNull  null
-            val email = teacherMap?.get("email") as? String ?: return@mapNotNull  null
-            val phoneNumber = teacherMap?.get("phoneNumber") as? String ?: return@mapNotNull  null
-            val teacherLastName = teacherMap?.get("teacherLastName") as? String ?: return@mapNotNull  null
-            val subjectMap = teacherMap.get("subject") as? Map<String, Any>
-            val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
-            val userMap = subjectMap?.get("user") as? Map<String, Any>
-            val userId = userMap?.get("id") as? String ?: return@mapNotNull null
-            val subject = Subject(subjectName, userId)
+                val id = document.id
+                val description = document.get("description")as? String ?: return@mapNotNull null
+                val title = document.get("title")as? String ?: return@mapNotNull null
+                val start = document.get("start")as? String ?: return@mapNotNull null
+                val end = document.get("end")as? String ?: return@mapNotNull null
+                val teacherMap = document.get("teacher") as? Map<String,Any>
+                val teacherName = teacherMap?.get("teacherName") as? String ?: return@mapNotNull  null
+                val email = teacherMap?.get("email") as? String ?: return@mapNotNull  null
+                val phoneNumber = teacherMap?.get("phoneNumber") as? String ?: return@mapNotNull  null
+                val teacherLastName = teacherMap?.get("teacherLastName") as? String ?: return@mapNotNull  null
+                val subjectMap = teacherMap.get("subject") as? Map<String, Any>
+                val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
+                val userMap = subjectMap?.get("user") as? Map<String, Any>
+                val userId = userMap?.get("id") as? String ?: return@mapNotNull null
+                val subject = Subject(subjectName, userId)
 
-            val teacher  =Teacher(teacherName,teacherLastName,email,phoneNumber,subject)
+                val teacher  =Teacher(teacherName,teacherLastName,email,phoneNumber,subject)
 
-            Event(id,title, description, teacher,start,end)
+                Event(id,title, description, teacher,start,end)
 
+            }
+        }catch (e: Exception){
+            Log.e(TAG, "getClass: ",e )
+            return emptyList()
         }
+
     }
 }

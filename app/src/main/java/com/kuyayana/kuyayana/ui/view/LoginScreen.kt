@@ -40,7 +40,8 @@ import com.kuyayana.kuyayana.ui.viewmodel.auth.LoginState
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
     onLoginSuccess: () -> Unit,
-    onRegisterClick:() -> Unit
+    onRegisterClick:() -> Unit,
+
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
