@@ -61,7 +61,7 @@ fun KuyaYanaNavigationBar(
 
         NavigationBarItem(
             icon = {Icon(
-                painter = painterResource(id = R.drawable.mail),
+                painter = painterResource(id = R.drawable.calc),
                 contentDescription = "Calculadora",
                 tint = MaterialTheme.colorScheme.surface
             )},

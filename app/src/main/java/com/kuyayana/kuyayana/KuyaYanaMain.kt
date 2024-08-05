@@ -153,6 +153,16 @@ fun KuyaYanaApp(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
                 NavigationDrawerItem(
+                    icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                    label = { Text("Creacion de Eventos") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(KuyaYanaScreen.Event.name)
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                NavigationDrawerItem(
                     icon = { Icon(Icons.Default.DateRange, contentDescription = null) },
                     label = { Text("Calendario") },
                     selected = false,
@@ -240,7 +250,7 @@ fun KuyaYanaApp(
                 bottomBar = {
                     KuyaYanaNavigationBar(navController)
                 },
-                floatingActionButton = {
+               /* floatingActionButton = {
                     FloatingActionButton(
                         onClick = { /* Toggle some state if needed */ },
                         containerColor = MaterialTheme.colorScheme.primary
@@ -250,7 +260,7 @@ fun KuyaYanaApp(
                             contentDescription = "Add"
                         )
                     }
-                },
+                },*/
                 floatingActionButtonPosition = FabPosition.End,
                 content = { paddingValues ->
                     NavHost(
