@@ -103,6 +103,16 @@ dependencies {
     implementation("com.google.apis:google-api-services-calendar:v3-rev20211026-1.32.1")
     implementation ("com.google.http-client:google-http-client:1.44.0")*/
 
+    //dependencias para las notificaciones
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.compose.ui:ui:1.4.0")
+    implementation("androidx.compose.material:material:1.4.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.activity:activity-compose:1.5.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
 
 
 
