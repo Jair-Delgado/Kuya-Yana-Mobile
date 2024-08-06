@@ -2,6 +2,7 @@ package com.kuyayana.kuyayana.ui.view
 
 import android.nfc.Tag
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,63 +50,53 @@ import com.kuyayana.kuyayana.ui.viewmodel.CalendarViewModel
 import org.intellij.lang.annotations.JdkConstants
 
 import java.time.DayOfWeek
+import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 import java.time.format.TextStyle
 import java.util.Locale
 
 
 @Composable
-fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()){
+fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()) {
     val events by calendarViewModel.eventos.collectAsState()
-    val startEvents = remember{ mutableStateOf(mutableListOf<String>())  }
-    val selectedEvent = remember{ mutableStateOf(Event("","","",Teacher("","","","",Subject()),))  }
-    /*val currentDate = remember{LocalDate.now()}
+    val startEvents = remember { mutableStateOf(mutableListOf<String>()) }
+    val selectedEvent = remember { mutableStateOf(Event("", "", "", Teacher("", "", "", "", Subject()))) }
     val currentMonth = remember { YearMonth.now() }
+    val startMonth = remember { currentMonth.minusMonths(100) }
+    val endMonth = remember { currentMonth.plusMonths(100) }
     val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
-    //val calendarState = rememberCalendarState(currentMonth)
-    val startDate = remember { currentMonth.minusMonths(100).atStartOfMonth() } // Adjust as needed
-    val endDate = remember { currentMonth.plusMonths(100).atEndOfMonth() } // Adjust as needed*/
-
-    val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
-    val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
-    val firstDayOfWeek = remember { firstDayOfWeekFromLocale() } // Available from the library
     var selectedDate: LocalDate? = LocalDate.now()
     var showResultDialog = remember { mutableStateOf(false) }
-   /* val state = rememberWeekCalendarState(
-        startDate = startDate,
-        endDate = endDate,
-        firstVisibleWeekDate = currentDate,
-        firstDayOfWeek = firstDayOfWeek
-    )*/
     val state = rememberCalendarState(
         startMonth = startMonth,
         endMonth = endMonth,
         firstVisibleMonth = currentMonth,
         firstDayOfWeek = firstDayOfWeek
     )
-    Box(modifier = Modifier.padding(16.dp)){
-        /*WeekCalendar(
-            state = state,
-            dayContent = { Day(it) }
-        )*/
+
+    val context = LocalContext.current
+
+    Box(modifier = Modifier.padding(16.dp)) {
         HorizontalCalendar(
             state = state,
             dayContent = { day ->
-                Day(showResultDialog,selectedEvent,startEvents,events,day, isSelected = selectedDate == day.date) { day ->
+                Day(showResultDialog, selectedEvent, startEvents, events, day, isSelected = selectedDate == day.date) { day ->
                     selectedDate = if (selectedDate == day.date) null else day.date
                 }
             },
-            monthHeader = {month ->
-
-                MonthHeader(month =  month.weekDays.first().map{it.date.month.toString()},month.weekDays.first().map{it.date.year.toString()} )
+            monthHeader = { month ->
+                MonthHeader(month = month.weekDays.first().map { it.date.month.toString() }, month.weekDays.first().map { it.date.year.toString() })
                 val daysOfWeek = month.weekDays.first().map { it.date.dayOfWeek }
-                DaysOfWeekTitle(daysOfWeek = daysOfWeek())
+                DaysOfWeekTitle(daysOfWeek = daysOfWeek)
             }
         )
-
     }
+
     if (showResultDialog.value) {
         AlertDialog(
             onDismissRequest = { showResultDialog.value = false },
@@ -116,77 +108,72 @@ fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()){
                         fontSize = 20.sp
                     )
                     Text(
-                        "Materia: ${selectedEvent.value.teacher?.subject?.subjectName} ",
+                        "Materia: ${selectedEvent.value.teacher?.subject?.subjectName ?: "Desconocido"} ",
                         fontSize = 20.sp
                     )
                     Text(
-                        "Empieza: ${selectedEvent.value.start.substring(11,16)} ",
+                        "Empieza: ${selectedEvent.value.start.substring(11, 16)} ",
                         fontSize = 20.sp
                     )
                     Text(
-                        "Termina: ${selectedEvent.value.end.substring(11,16)} ",
+                        "Termina: ${selectedEvent.value.end.substring(11, 16)} ",
                         fontSize = 20.sp
                     )
                 }
             },
             confirmButton = {
                 Button(
-                    onClick = { showResultDialog.value = false }
+                    onClick = {
+                        showResultDialog.value = false
+                        try {
+                            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmXXX")
+                            val eventStartTime = LocalDateTime.parse(selectedEvent.value.start, formatter)
+                                .atZone(ZoneId.systemDefault())
+                                .toInstant()
+                                .toEpochMilli()
+
+                            val currentTime = Instant.now().toEpochMilli()
+
+                            if (eventStartTime > currentTime) {
+                                scheduleNotification(
+                                    context,
+                                    selectedEvent.value.title,
+                                    selectedEvent.value.teacher?.subject?.subjectName ?: "Desconocido",
+                                    eventStartTime
+                                )
+                            } else {
+                                Toast.makeText(context, "La hora de inicio ya ha pasado", Toast.LENGTH_LONG).show()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Toast.makeText(context, "Error al programar la notificación: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 ) {
                     Text("Aceptar")
                 }
             }
         )
     }
-
 }
-/*@Composable
-fun DayContent(day: CalendarDay, events: List<Event>){
-    Box(
-        modifier = Modifier
-            .padding(4.dp)
-    ){
-        Text(text = day.date.dayOfMonth.toString())
-        if (events.isNotEmpty()){
-            Box(modifier = Modifier
-                //.size(8.dp)
-                .background(Color.Red, CircleShape)
-                .align(Alignment.BottomEnd)
-            )
-        }
-    }
-}
-*/
-/*@Composable
-fun Day(day: WeekDay) {
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f), // This is important for square sizing!
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = day.date.dayOfMonth.toString())
-    }
-}*/
 @Composable
-fun MonthHeader(month: List<String>,year: List<String>){
+fun MonthHeader(month: List<String>, year: List<String>) {
     Text(
-        text = "${month[month.size-1].toString().toLowerCase().capitalize()}-${year[year.size-1]} ",
-        modifier = Modifier
-            .padding(16.dp)
+        text = "${month[month.size - 1].toLowerCase().capitalize()}-${year[year.size - 1]} ",
+        modifier = Modifier.padding(16.dp)
     )
 }
 
-
 @Composable
-fun Day(show:MutableState<Boolean>, selectedEvent: MutableState<Event>,auxStarts: MutableState<MutableList<String>>, events: List<Event>,day: CalendarDay,isSelected: Boolean,onClick: (CalendarDay)->Unit) {
+fun Day(show: MutableState<Boolean>, selectedEvent: MutableState<Event>, auxStarts: MutableState<MutableList<String>>, events: List<Event>, day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
     val dayDate: String = day.date.toString()
     var i = 0
-    var auxBool  =false
-    events.forEach{
+    var auxBool = false
+    events.forEach {
         i = i + 1
-        var aux = it.start.substring(0,10)
+        val aux = it.start.substring(0, 10)
         auxStarts.value.add(aux)
-        if (aux == dayDate){
+        if (aux == dayDate) {
             auxBool = true
             Box(
                 modifier = Modifier
@@ -195,38 +182,31 @@ fun Day(show:MutableState<Boolean>, selectedEvent: MutableState<Event>,auxStarts
                     .clickable(
                         enabled = true,
                         onClick = {
-                            onClick(day);
-
+                            onClick(day)
                             selectedEvent.value = it
                             show.value = true
                         }
-                    ), // This is important for square sizing!
+                    ),
                 contentAlignment = Alignment.Center,
-
             ) {
                 Text(text = day.date.dayOfMonth.toString())
             }
-        } else if(auxBool == false) {
+        } else if (!auxBool) {
             Box(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .clickable(
                         enabled = true,
-                        onClick = {
-                            onClick(day);
-
-                        }
-                    ), // This is important for square sizing!
+                        onClick = { onClick(day) }
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(text = day.date.dayOfMonth.toString())
             }
         }
-
-
     }
-
 }
+
 @Composable
 fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
     Row(modifier = Modifier.fillMaxWidth()) {
@@ -239,7 +219,6 @@ fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
         }
     }
 }
-
 
 @Preview
 @Composable
