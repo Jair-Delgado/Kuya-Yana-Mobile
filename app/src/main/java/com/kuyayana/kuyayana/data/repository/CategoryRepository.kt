@@ -28,7 +28,12 @@ class CategoryRepository {
         return try {
 
             val snapshot = categoryCollection.get().await()
-            snapshot.toObjects(Category::class.java)
+            //snapshot.toObjects(Category::class.java)
+
+            snapshot.documents.map { document ->
+                val category = document.toObject(Category::class.java)
+                category?.copy(id = document.id) // Asignar el ID del documento a la categoría
+            }.filterNotNull()
 
         }catch (e: Exception){
             Log.e("CategoryRepository", "Error getting categories",e)

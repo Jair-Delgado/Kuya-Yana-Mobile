@@ -26,6 +26,7 @@ class EventRepository {
         event: Event,
         subject: Subject,
         teacher:Teacher,
+        category: Category
     ) {
         try {
             //verifica si un usuario esta registrado, sino devuelve null (se usa para que cada creacion se este vinculada al usuario)
@@ -39,7 +40,9 @@ class EventRepository {
                     "start" to event.start,
                     "end" to event.end,
                     "eventCategory" to hashMapOf(
-                        "categoryName" to "evento"
+                        "categoryName" to category.categoryName,
+                        "id" to category.id
+
                     ),
                     "teacher" to hashMapOf(
                         "email" to teacher.email,

@@ -27,6 +27,8 @@ class EventViewModel: ViewModel() {
     private val repository = EventRepository()
     private val subjectRepository = SubjectRepository()
     private val teacherRepository = TeacherRepository()
+    private val categoryRepository = CategoryRepository()
+
 
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events : StateFlow<List<Event>> = _events
@@ -56,18 +58,21 @@ class EventViewModel: ViewModel() {
         getEvents()
         getSubjects()
         getTeachers()
+        getCategories()
     }
     fun createEvent(
         event: Event,
         subject: Subject,
-        teacher: Teacher
+        teacher: Teacher,
+        category: Category
     ){
         viewModelScope.launch {
             try {
                 repository.addEvent(
                     event,
                     subject,
-                    teacher
+                    teacher,
+                    category
                 )
                 getEvents()
                 Log.d("EventViewModel","Event added")
@@ -89,6 +94,11 @@ class EventViewModel: ViewModel() {
     fun getTeachers() {
         viewModelScope.launch {
             _teachers.value = teacherRepository.getTeachers()
+        }
+    }
+    fun getCategories() {
+        viewModelScope.launch {
+            _categories.value = categoryRepository.getCategories()
         }
     }
     fun updateMessage(date: String) {

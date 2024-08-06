@@ -1,7 +1,8 @@
 package com.kuyayana.kuyayana.ui.view
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.widget.DatePicker
+import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,29 +30,42 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.kuyayana.kuyayana.data.models.Category
 import com.kuyayana.kuyayana.data.models.Event
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.models.Teacher
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 import com.kuyayana.kuyayana.ui.viewmodel.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun EventsScreen (
     eventViewModel: EventViewModel = viewModel(),
-    categoryName: Category
 ){
     var title by remember { mutableStateOf("")}
     var description by remember { mutableStateOf("")}
     var end by remember { mutableStateOf("")}
     var start by remember { mutableStateOf("")}
     var teacher by remember { mutableStateOf(Teacher("","","","",Subject()))}
+    var category by remember { mutableStateOf(Category())}
+    var endDate by remember { mutableStateOf("") }
+    var startDate by remember { mutableStateOf("") }
+
+
+    var endHour by remember { mutableStateOf(0) }
+    var endMinute by remember { mutableStateOf(0) }
+    var startHour by remember { mutableStateOf(0) }
+    var startMinute by remember { mutableStateOf(0) }
 
 
     var selectedTeacher by remember { mutableStateOf<Teacher?>(null)}
     var selectedSubject by remember { mutableStateOf<Subject?>(null)}
+    var selectedCategory by remember { mutableStateOf<Category?>(null)}
     var selectedDate by remember { mutableStateOf("")}
 
 
@@ -60,31 +75,61 @@ fun EventsScreen (
     var message by remember { mutableStateOf("") }
 
     val calendar = Calendar.getInstance()
-    //val currentDate = Calendar.getInstance()
     val context = LocalContext.current
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-    /*val datePickerDialog = DatePickerDialog(
-        context,
-        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            end = "$dayOfMonth/${month + 1}/$year"
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )*/
-
-    val datePickerDialog = DatePickerDialog(context, { _, year, month, dayOfMonth ->
-        end = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-            Calendar.getInstance().apply {
-                set(year, month, dayOfMonth)
-            }.time
+    val datePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                startDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
+                    Calendar.getInstance().apply {
+                        set(year, month, dayOfMonth)
+                    }.time
+                )
+                    TimePickerDialog(
+                        context,
+                        { _, hourOfDay, minute ->
+                            startHour = hourOfDay
+                            startMinute = minute
+                        },
+                        startHour,
+                        startMinute,
+                        true // Formato de 24 horas
+                    ).show()
+            },
+            Calendar.getInstance().get(Calendar.YEAR),
+            Calendar.getInstance().get(Calendar.MONTH),
+            Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         )
-
-    }, year, month, day)
-
+    }
+    val endDatePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                endDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
+                    Calendar.getInstance().apply {
+                        set(year, month, dayOfMonth)
+                    }.time
+                )
+                    TimePickerDialog(
+                        context,
+                        { _, hourOfDay, minute ->
+                            endHour = hourOfDay
+                            endMinute = minute
+                        },
+                        endHour,
+                        endMinute,
+                        true // Formato de 24 horas
+                    ).show()
+            },
+            Calendar.getInstance().get(Calendar.YEAR),
+            Calendar.getInstance().get(Calendar.MONTH),
+            Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        )
+    }
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -101,30 +146,74 @@ fun EventsScreen (
             label = { Text("Descripccion") },
             modifier = Modifier.fillMaxWidth()
         )
-       /* Spacer(Modifier.padding(vertical = 8.dp))
-        OutlinedTextField(
-            value = selectedDate,
-            onValueChange = { start = it },
-            label = { Text("Inicia") },
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                IconButton(onClick = { datePickerDialog.show() }) {
-                    Icon(Icons.Filled.DateRange, contentDescription="")
-                }
-            }
-        )*/
+
         Spacer(Modifier.padding(vertical = 8.dp))
         OutlinedTextField(
-            value = end,
-            onValueChange = { end = it },
+            value = "$startDate ${String.format("%02d:%02d", startHour, startMinute)}",
+            onValueChange = {},
+            label = { Text("Empieza") },
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                IconButton(onClick = {
+                    datePickerDialog.show()
+                    //startTimePickerDialog.show()
+                }) {
+                    Icon(Icons.Filled.DateRange, contentDescription = "")
+                }
+            },
+            readOnly = true
+        )
+        Spacer(Modifier.padding(vertical = 8.dp))
+        OutlinedTextField(
+            value = "$endDate ${String.format("%02d:%02d", endHour, endMinute)}",
+            onValueChange = {},
             label = { Text("Finaliza") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
-                IconButton(onClick = { datePickerDialog.show() }) {
-                    Icon(Icons.Filled.DateRange, contentDescription="")
+                IconButton(onClick = {
+                    endDatePickerDialog.show()
+                   // endTimePickerDialog.show()
+                }) {
+                    Icon(Icons.Filled.DateRange, contentDescription = "")
+                }
+            },
+            readOnly = true
+        )
+
+        //CATEGORIA
+        Spacer(Modifier.padding(vertical = 8.dp))
+
+        var expandedCategory by remember { mutableStateOf(false) }
+        Box {
+            OutlinedTextField(
+                value = selectedCategory?.categoryName ?: "Seleccionar Categoria",
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expandedCategory = true },
+                enabled = false,
+                readOnly = true,
+                label = { Text("Categoria") }
+            )
+            DropdownMenu(
+                expanded = expandedCategory,
+                onDismissRequest = { expandedCategory = false },
+
+                ) {
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = {Text(category.categoryName)},
+                        onClick = {
+                            selectedCategory = category
+                            expandedCategory = false
+                        }
+                    )
                 }
             }
-        )
+        }
+
+        //FINALIZA CATEGORIA-------------
+
         Spacer(Modifier.padding(vertical = 8.dp))
 
         var expanded by remember { mutableStateOf(false) }
@@ -191,31 +280,62 @@ fun EventsScreen (
                     val newEvent = Event(
                         title = title,
                         description = description,
-                        start = start,
-                        end = end,
+                        start = "${startDate}T${String.format("%02d:%02d", startHour, startMinute)}-05:00",
+                        //start = start,
+                       // end = end,
+                        end ="${endDate}T${String.format("%02d:%02d", endHour, endMinute)}-05:00",
                         teacher = teacher
                     )
                     eventViewModel.createEvent(
                         newEvent,
                         selectedSubject!!,
-                        selectedTeacher!!
+                        selectedTeacher!!,
+                        selectedCategory!!
                     )
                     title = ""
                     description = ""
-                    end = ""
+                   // end = ""
+                    endHour = 0
+                    endMinute = 0
                     start = ""
                 }
+
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Crear Evento")
         }
     }
-
 }
 
 @Preview(showBackground = true)
 @Composable
 fun EventsScreenPreview(){
    // EventsScreen()
+}
+@Composable
+fun TimePickerDialog(
+    initialHour: Int,
+    initialMinute: Int,
+    onTimeSelected: (Int, Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val timePicker = remember {
+        android.app.TimePickerDialog(
+            context,
+            { _, hourOfDay, minute ->
+                onTimeSelected(hourOfDay, minute)
+            },
+            initialHour,
+            initialMinute,
+            true
+        )
+    }
+
+    DisposableEffect(Unit) {
+        timePicker.setOnDismissListener { onDismiss() }
+        timePicker.show()
+        onDispose { timePicker.dismiss() }
+    }
 }
