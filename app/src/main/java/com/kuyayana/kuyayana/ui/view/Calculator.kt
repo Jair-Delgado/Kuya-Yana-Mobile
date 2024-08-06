@@ -267,6 +267,7 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
                 Button(
                     onClick = {
                         try {
+                            Log.d( "CalculatorScreen: ",selectedRecord?.subject.toString())
                             teacherViewModel.updateRecord(selectedRecord)
                         } catch (e: Exception) {
                             errorMessage = "Error al guardar"
