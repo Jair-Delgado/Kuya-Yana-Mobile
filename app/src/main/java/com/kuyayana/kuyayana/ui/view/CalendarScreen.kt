@@ -65,7 +65,7 @@ import java.util.Locale
 fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()) {
     val events by calendarViewModel.eventos.collectAsState()
     val startEvents = remember { mutableStateOf(mutableListOf<String>()) }
-    val selectedEvent = remember { mutableStateOf(Event("", "", "", Teacher("", "", "", "", Subject()))) }
+    val selectedEvents = remember { mutableStateOf(mutableListOf<Event>()) }
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(100) }
     val endMonth = remember { currentMonth.plusMonths(100) }
@@ -85,7 +85,7 @@ fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()) {
         HorizontalCalendar(
             state = state,
             dayContent = { day ->
-                Day(showResultDialog, selectedEvent, startEvents, events, day, isSelected = selectedDate == day.date) { day ->
+                Day(showResultDialog, selectedEvents, startEvents, events, day, isSelected = selectedDate == day.date) { day ->
                     selectedDate = if (selectedDate == day.date) null else day.date
                 }
             },
@@ -100,25 +100,15 @@ fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()) {
     if (showResultDialog.value) {
         AlertDialog(
             onDismissRequest = { showResultDialog.value = false },
-            title = { Text("Clase:") },
+            title = { Text("Clases:") },
             text = {
                 Column {
-                    Text(
-                        "Titulo: ${selectedEvent.value.title} ",
-                        fontSize = 20.sp
-                    )
-                    Text(
-                        "Materia: ${selectedEvent.value.teacher?.subject?.subjectName ?: "Desconocido"} ",
-                        fontSize = 20.sp
-                    )
-                    Text(
-                        "Empieza: ${selectedEvent.value.start.substring(11, 16)} ",
-                        fontSize = 20.sp
-                    )
-                    Text(
-                        "Termina: ${selectedEvent.value.end.substring(11, 16)} ",
-                        fontSize = 20.sp
-                    )
+                   selectedEvents.value.forEach{
+                       var i: Int = 0
+                       i = i + 1
+                       Text("$i.- ${it.teacher?.subject?.subjectName} - ${it.teacher?.teacherName} ${it.teacher?.teacherLastName}")
+                       Text("${it.start.substring(11,16)} - ${it.end.substring(11,16)}")
+                   }
                 }
             },
             confirmButton = {
@@ -127,23 +117,32 @@ fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()) {
                         showResultDialog.value = false
                         try {
                             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmXXX")
-                            val eventStartTime = LocalDateTime.parse(selectedEvent.value.start, formatter)
-                                .atZone(ZoneId.systemDefault())
-                                .toInstant()
-                                .toEpochMilli()
+                            selectedEvents.value.forEach{
+                                val eventStartTime = LocalDateTime.parse(it.start, formatter)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toInstant()
+                                    .toEpochMilli()
 
-                            val currentTime = Instant.now().toEpochMilli()
-
-                            if (eventStartTime > currentTime) {
-                                scheduleNotification(
-                                    context,
-                                    selectedEvent.value.title,
-                                    selectedEvent.value.teacher?.subject?.subjectName ?: "Desconocido",
-                                    eventStartTime
-                                )
-                            } else {
-                                Toast.makeText(context, "La hora de inicio ya ha pasado", Toast.LENGTH_LONG).show()
+                                val currentTime = Instant.now().toEpochMilli()
+                                Log.d("CalendarScreen: ", eventStartTime.toString())
+                                Log.d("CalendarScreen: ", currentTime.to.toString())
+                                if (eventStartTime > currentTime) {
+                                    Log.d("CalendarScreen: ",eventStartTime.toString())
+                                    scheduleNotification(
+                                        context,
+                                        it.title,
+                                        it.teacher?.subject?.subjectName ?: "Desconocido",
+                                        eventStartTime
+                                    )
+                                } else {
+                                    Toast.makeText(context, "La hora de inicio ya ha pasado", Toast.LENGTH_LONG).show()
+                                }
                             }
+
+
+
+
+
                         } catch (e: Exception) {
                             e.printStackTrace()
                             Toast.makeText(context, "Error al programar la notificación: ${e.message}", Toast.LENGTH_LONG).show()
@@ -165,7 +164,7 @@ fun MonthHeader(month: List<String>, year: List<String>) {
 }
 
 @Composable
-fun Day(show: MutableState<Boolean>, selectedEvent: MutableState<Event>, auxStarts: MutableState<MutableList<String>>, events: List<Event>, day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
+fun Day(show: MutableState<Boolean>, selectedEvent: MutableState<MutableList<Event>>, auxStarts: MutableState<MutableList<String>>, events: List<Event>, day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
     val dayDate: String = day.date.toString()
     var i = 0
     var auxBool = false
@@ -183,7 +182,13 @@ fun Day(show: MutableState<Boolean>, selectedEvent: MutableState<Event>, auxStar
                         enabled = true,
                         onClick = {
                             onClick(day)
-                            selectedEvent.value = it
+                            selectedEvent.value = mutableListOf()
+                            events.forEach { ev ->
+
+                                if (ev.start.substring(0, 10) == dayDate) {
+                                    selectedEvent.value.add(ev)
+                                }
+                            }
                             show.value = true
                         }
                     ),
