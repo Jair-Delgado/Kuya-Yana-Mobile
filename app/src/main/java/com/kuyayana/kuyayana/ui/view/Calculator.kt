@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kuyayana.kuyayana.data.models.Record
 import com.kuyayana.kuyayana.data.models.Section
+import com.kuyayana.kuyayana.ui.viewmodel.SubjectViewModel
 import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 import io.grpc.internal.JsonParser
 import org.json.JSONObject
@@ -67,8 +68,11 @@ import java.util.Objects
 
 
 @Composable
-fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
-    val subjects by teacherViewModel.subjects.collectAsState()
+fun CalculatorScreen(
+    teacherViewModel: TeacherViewModel = viewModel(),
+    subjectViewModel: SubjectViewModel = viewModel(),
+) {
+    val subjects by subjectViewModel.subjects.collectAsState()
     val records by teacherViewModel.records.collectAsState()
     var selectedRecord by remember { mutableStateOf(records.firstOrNull()?.also { if (it.sections.isEmpty()) it.sections.add(Section()) }) }
 
@@ -79,14 +83,14 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf(false) }
     var showResultDialog by remember { mutableStateOf(false) }
-    var showPercentage by remember { mutableStateOf(true) } // Variable to select percentage or average
+    var showPercentage by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Dropdown menu for selecting subject
+
         Box {
             OutlinedTextField(
                 value = selectedRecord?.subject?.subjectName ?: "Seleccionar Asignatura",
@@ -120,7 +124,6 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // RadioGroup for selecting percentage or average
         Column {
             Text("Mostrar como: ", modifier = Modifier.padding(bottom = 8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {

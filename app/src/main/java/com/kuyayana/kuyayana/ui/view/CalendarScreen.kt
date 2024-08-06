@@ -125,7 +125,7 @@ fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()) {
 
                                 val currentTime = Instant.now().toEpochMilli()
                                 Log.d("CalendarScreen: ", eventStartTime.toString())
-                                Log.d("CalendarScreen: ", currentTime.to.toString())
+                                Log.d("CalendarScreen: ", currentTime.toString())
                                 if (eventStartTime > currentTime) {
                                     Log.d("CalendarScreen: ",eventStartTime.toString())
                                     scheduleNotification(
