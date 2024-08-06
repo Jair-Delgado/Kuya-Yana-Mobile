@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.kuyayana.kuyayana.data.models.Section
 import com.kuyayana.kuyayana.data.models.Subject
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.tasks.await
@@ -14,6 +15,7 @@ class SubjectRepository {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private val subjectCollection = db.collection("subject")
+    private val recordCollection = db.collection("record")
 
     @SuppressLint("SuspiciousIndentation")
     suspend fun addSubject(subject: Subject) {
@@ -25,6 +27,7 @@ class SubjectRepository {
                     "subjectName" to subject.subjectName,
                     "user" to hashMapOf("id" to uid)
                 )
+
                val documentRef = subjectCollection
                     .add(subjectData)
                     .await()
@@ -32,6 +35,19 @@ class SubjectRepository {
                      .update("id",documentRef.id)
                      .await()
                 documentRef.id
+
+                val recordData = hashMapOf(
+                    "id" to "",
+                    "finalGrade" to 0.0,
+                    "sections" to mutableListOf<Section>(),
+                    "subject" to hashMapOf(
+                        "id" to documentRef.id,
+                        "subjectName" to subject.subjectName,
+                        "user" to hashMapOf("id" to uid)
+                    )
+                )
+                val recordRef = recordCollection.add((recordData)).await()
+                recordRef.update("id",recordRef.id).await()
             }
             Log.d("SubjectRepository", "Subject added: ${subject.subjectName}")
         } catch (e: Exception) {
@@ -75,6 +91,13 @@ class SubjectRepository {
                 .document(subjectId)
                 .delete()
                 .await()
+            val snapshot = recordCollection.whereEqualTo("subject.id",subjectId).get().await()
+            if (!snapshot.isEmpty){
+                snapshot.forEach{
+                    recordCollection.document(it.id).delete().await()
+                }
+            }
+
         }else{
             Log.e("SubjectRepository", "Error: User not authenticated")
         }
