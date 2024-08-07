@@ -51,7 +51,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.kuyayana.kuyayana.data.models.Category
 import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 import com.kuyayana.kuyayana.ui.view.CalculatorScreen
 import com.kuyayana.kuyayana.ui.view.CalendarScreen
@@ -268,7 +267,7 @@ fun KuyaYanaApp(
                         }
                         composable(route = KuyaYanaScreen.Teacher.name) {
                             TeacherScreen(
-                                navController,
+
                                 teacherViewModel = TeacherViewModel()
                             )
                         }
