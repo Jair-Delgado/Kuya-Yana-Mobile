@@ -126,7 +126,7 @@ fun TeacherItem(
                             tint = Color.Red
                         )
                     }
-                    IconButton(
+                   /* IconButton(
                         onClick = {},
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
@@ -137,7 +137,7 @@ fun TeacherItem(
                             contentDescription = "Localized description",
                             tint = Color.Yellow
                         )
-                    }
+                    }*/
                 }
             }
         }

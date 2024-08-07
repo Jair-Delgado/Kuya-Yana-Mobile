@@ -21,7 +21,6 @@ class TeacherRepository {
             val uid = auth.currentUser?.uid
             if (uid != null){
                 val teacherData = hashMapOf(
-
                     "teacherName" to teacher.teacherName,
                     "teacherLastName" to teacher.teacherLastName,
                     "email" to teacher.email,
@@ -33,12 +32,13 @@ class TeacherRepository {
                         )
                     )
                 )
-                teacherCollection
+                val documentRef =teacherCollection
                     .document()
                     .set(teacherData)
                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
                     .await()
+
             }
             Log.d("TeacherRepository", "Teacher added: ${teacher.teacherName}")
 
@@ -95,10 +95,13 @@ class TeacherRepository {
 
     }
 
-    suspend fun deleteTeacher(teacher: Teacher) {
+    suspend fun deleteTeacher(
+        teacher: Teacher
+    ) {
         val uid = auth.currentUser?.uid
         if (uid != null) {
-            // Suponiendo que el nombre es único y se puede usar para buscar el documento
+
+
             val querySnapshot = teacherCollection
                 .whereEqualTo("teacherName", teacher.teacherName)
                 .get()

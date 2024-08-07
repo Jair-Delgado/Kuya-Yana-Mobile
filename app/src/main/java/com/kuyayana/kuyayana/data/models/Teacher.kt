@@ -6,8 +6,7 @@ data class Teacher(
     val teacherLastName: String = "",
     val email: String = "",
     val phoneNumber: String = "",
-    val subject: Subject?
-
+    val subject: Subject?,
     //val subject: String = ""
 ) {
 
