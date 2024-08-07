@@ -27,14 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.models.Teacher
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 
 
 @Composable
 fun TeacherScreen(
-    teacherViewModel: TeacherViewModel = viewModel()
+    teacherViewModel: TeacherViewModel = viewModel(),
+    navController: NavHostController,
 ) {
     var email by remember { mutableStateOf("") }
 
@@ -196,6 +199,7 @@ fun TeacherScreen(
                     teacherLastName = ""
                     phoneNumber = ""
                     selectedSubject = null
+                    navController.navigate(KuyaYanaScreen.TeacherList.name)
                 }
             },
             modifier = Modifier.fillMaxWidth()

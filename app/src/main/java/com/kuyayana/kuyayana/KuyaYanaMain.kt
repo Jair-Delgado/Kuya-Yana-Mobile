@@ -267,8 +267,8 @@ fun KuyaYanaApp(
                         }
                         composable(route = KuyaYanaScreen.Teacher.name) {
                             TeacherScreen(
-
-                                teacherViewModel = TeacherViewModel()
+                                teacherViewModel = TeacherViewModel(),
+                                navController
                             )
                         }
                         composable(route = KuyaYanaScreen.TeacherList.name) {
