@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
@@ -107,7 +108,7 @@ fun KuyaYanaApp(
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    icon = { Icon(Icons.Default.AccountBox, contentDescription = null) },
                     label = { Text("Lista de Profesores") },
                     selected = false,
                     onClick = {
@@ -143,6 +144,16 @@ fun KuyaYanaApp(
                     selected = false,
                     onClick = {
                         navController.navigate(KuyaYanaScreen.Subject.name)
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    label = { Text("Profesores") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(KuyaYanaScreen.Teacher.name)
                         scope.launch { drawerState.close() }
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)

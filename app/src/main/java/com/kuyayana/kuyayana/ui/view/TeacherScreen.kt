@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -23,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kuyayana.kuyayana.data.models.Subject
@@ -35,9 +38,27 @@ fun TeacherScreen(
     teacherViewModel: TeacherViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
+    //validacion email
+
+    var isValidEmail by remember { mutableStateOf(true) }
+    val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+.com"
+
     var teacherName by remember { mutableStateOf("") }
     var teacherLastName by remember { mutableStateOf("") }
+
+    //validacion nombres y apellidos
+
+    var isValidName by remember { mutableStateOf(true) }
+    val namePattern = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s]+$"
+    var isValidLastName by remember { mutableStateOf(true) }
+
+
     var phoneNumber by remember { mutableStateOf("") }
+
+    //validacion de telefono
+
+    var isValidPhoneNumber by remember { mutableStateOf(true) }
+    val phonePattern = "^[0-9]*$"
 
     var selectedSubject by remember { mutableStateOf<Subject?>(null) }
 
@@ -52,31 +73,84 @@ fun TeacherScreen(
     ) {
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                isValidEmail = Regex(emailPattern).matches(it)
+                            },
             label = { Text("Email") },
+            isError = !isValidEmail,
             modifier = Modifier.fillMaxWidth()
         )
+        if (!isValidEmail) {
+            Text(
+                text = "Por favor ingrese un correo válido",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
         Spacer(Modifier.padding(vertical = 8.dp))
         OutlinedTextField(
             value = teacherName,
-            onValueChange = { teacherName = it },
+            onValueChange = {
+                teacherName = it
+                isValidName = Regex(namePattern).matches(it)
+                            },
             label = { Text("Nombre") },
+            isError = !isValidName,
             modifier = Modifier.fillMaxWidth()
         )
+        if (!isValidName) {
+            Text(
+                text = "Por favor ingrese un nombre válido (solo letras y espacios)",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
         Spacer(Modifier.padding(vertical = 8.dp))
         OutlinedTextField(
             value = teacherLastName,
-            onValueChange = { teacherLastName = it },
+            onValueChange = {
+                teacherLastName = it
+                isValidLastName = Regex(namePattern).matches(it)
+                            },
             label = { Text("Apellido") },
+            isError = !isValidLastName,
             modifier = Modifier.fillMaxWidth()
         )
+        if (!isValidLastName) {
+            Text(
+                text = "Por favor ingrese un apellido válido (solo letras y espacios)",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
         Spacer(Modifier.padding(vertical = 8.dp))
         OutlinedTextField(
             value = phoneNumber,
-            onValueChange = { phoneNumber = it },
+            onValueChange = {
+                if (it.length <= 10 && Regex(phonePattern).matches(it)) {
+                phoneNumber = it
+                isValidPhoneNumber = true
+            } else {
+                isValidPhoneNumber = false
+            }
+                            },
             label = { Text("Teléfono") },
+            isError = !isValidPhoneNumber,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
+        if (!isValidPhoneNumber) {
+            Text(
+                text = "Por favor ingrese un número válido (solo números y máximo 10 dígitos)",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
         Spacer(Modifier.padding(vertical = 8.dp))
 
         var expanded by remember { mutableStateOf(false) }
@@ -112,22 +186,21 @@ fun TeacherScreen(
         Spacer(Modifier.padding(vertical = 16.dp))
         Button(
             onClick = {
-                if (selectedSubject != null) {
+                if (isValidEmail && isValidName && isValidLastName && isValidPhoneNumber && selectedSubject != null) {
                     val newTeacher = Teacher(
                         email = email,
                         teacherName = teacherName,
                         teacherLastName = teacherLastName,
                         phoneNumber = phoneNumber,
-                        subject = selectedSubject
+                        subject = selectedSubject!!
                     )
-                    teacherViewModel.createTeacher(
-                        newTeacher,
-                        selectedSubject!!
-                    )
+                    teacherViewModel.createTeacher(newTeacher,selectedSubject!!)
+                    // Clear fields after successful creation
                     email = ""
                     teacherName = ""
                     teacherLastName = ""
                     phoneNumber = ""
+                    selectedSubject = null
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -135,11 +208,5 @@ fun TeacherScreen(
             Text("Crear Profesor")
         }
 
-        LazyColumn {
-            items(teachers){ teacher ->
-                Text(text = teacher.teacherName)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
     }
 }

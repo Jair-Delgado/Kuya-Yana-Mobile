@@ -119,7 +119,7 @@ fun TaskItem (
         }
         if(expandEvent){
                 Box(modifier = Modifier
-                    .padding(16.dp)
+                    .padding(20.dp)
                     .fillMaxWidth()
                 ) {
                     Column {

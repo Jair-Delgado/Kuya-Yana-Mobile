@@ -81,6 +81,8 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
     var showResultDialog by remember { mutableStateOf(false) }
     var showPercentage by remember { mutableStateOf(true) } // Variable to select percentage or average
 
+    var reloadKey by remember { mutableStateOf(0) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -201,8 +203,10 @@ fun CalculatorScreen(teacherViewModel: TeacherViewModel = viewModel()) {
                                     .padding(8.dp)
                                     .clickable {
                                         section.grades.remove(grade)
+                                        reloadKey++
                                     },
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.Center,
+
                             ) {
                                 Text("Nota: $grade", textAlign = TextAlign.Center)
                             }

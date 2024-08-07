@@ -100,13 +100,6 @@ fun SubjectScreen(
                 }
             }
         }
-        Button(
-            onClick = {
-                navController.navigate(KuyaYanaScreen.Teacher.name)
-            }
-        ) {
-            Text(stringResource(id = R.string.crea_un_profesor))
-        }
     }
 }
 @Composable
