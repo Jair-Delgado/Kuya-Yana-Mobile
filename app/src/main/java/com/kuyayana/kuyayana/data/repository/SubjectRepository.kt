@@ -114,6 +114,25 @@ class SubjectRepository {
                     //.set(data, SetOptions.merge())
                     .update("subjectName",newData)
                     .await()
+                Log.d("updateSubject: ",documentId)
+                val snapshot =recordCollection.whereEqualTo("subject.id",documentId).get().await()
+                Log.d( "updateSubject: ", snapshot.documents.size.toString())
+                if (!snapshot.isEmpty){
+                    val subjectMap = snapshot.documents[0].get("subject") as? Map<String, Any>
+                    val subjectId = subjectMap?.get("id") as? String ?
+
+                    val recordData = hashMapOf(
+                            "id" to snapshot.documents[0].id,
+                        "finalGrade" to snapshot.documents[0].get("finalGrade"),
+                        "sections" to snapshot.documents[0].get("sections"),
+                        "subject" to hashMapOf(
+                        "id" to subjectId,
+                        "subjectName" to newData,
+                        "user" to hashMapOf("id" to uid)
+                    )
+                    )
+                    recordCollection.document(snapshot.documents[0].id).update(recordData).await()
+                }
                 Log.d("SubjectRepository", "Subject with ID $documentId updated successfully")
             }else{
                 Log.e("SubjectRepository", "Error: User not authenticated")

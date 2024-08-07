@@ -98,6 +98,7 @@ class TeacherRepository {
     suspend fun deleteTeacher(teacher: Teacher) {
         val uid = auth.currentUser?.uid
         if (uid != null) {
+            // Suponiendo que el nombre es único y se puede usar para buscar el documento
             val querySnapshot = teacherCollection
                 .whereEqualTo("teacherName", teacher.teacherName)
                 .get()

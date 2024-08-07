@@ -41,10 +41,11 @@ class RecordRepository {
 
                 val subjectMap = document.get("subject") as? Map<String, Any>
                 val subjectName = subjectMap?.get("subjectName") as? String ?: return@mapNotNull null
+                val subjectId = subjectMap?.get("id") as? String ?: return@mapNotNull null
                 val userMap = subjectMap?.get("user") as? Map<String, Any>
                 val userId = userMap?.get("id") as? String ?: return@mapNotNull null
 
-                val subject = Subject(subjectName, userId)
+                val subject = Subject(subjectName, subjectId)
                 Log.d(TAG, "getRecords: "+ Record(id,finalGrade, sections, subject))
                 Record(id,finalGrade, sections, subject)
 
@@ -63,6 +64,7 @@ class RecordRepository {
             "finalGrade" to record?.finalGrade,
             "sections" to record?.sections,
             "subject" to hashMapOf(
+                "id" to record?.subject?.id,
                 "subjectName" to record?.subject?.subjectName,
                 "user" to hashMapOf(
                     "id" to uid
@@ -70,7 +72,6 @@ class RecordRepository {
             )
         )
         if (record != null) {
-            Log.d(TAG, "updateRecord: "+ record.id)
             recordCollection.document(record.id).set(recordData)
                 .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                 .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }

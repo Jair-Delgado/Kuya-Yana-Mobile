@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -89,19 +90,20 @@ fun TeacherItem(
             if (expandEvent) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Correo: ${teacher.email}",
+                    text = "CORREO:  ${teacher.email}",
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = 20.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Telefono: ${teacher.phoneNumber}",
+                    text = "TELEFONO:  ${teacher.phoneNumber}",
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
                 teacher.subject?.let { subject ->
                     Text(
-                        text = "Materia: ${subject.subjectName}",
+                        text = "MATERIA:  ${subject.subjectName}",
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
@@ -124,6 +126,18 @@ fun TeacherItem(
                             tint = Color.Red
                         )
                     }
+                   /* IconButton(
+                        onClick = {},
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = "Localized description",
+                            tint = Color.Yellow
+                        )
+                    }*/
                 }
             }
         }
