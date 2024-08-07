@@ -2,6 +2,8 @@ package com.kuyayana.kuyayana.ui.view.appBars
 
 import android.util.Log
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ExitToApp
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Menu
@@ -48,7 +50,6 @@ fun KuyaYanaTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            //containerColor = Color.White,
             titleContentColor = secondary
         ),
         title = { Text(stringResource(currentScreen.title))
@@ -69,13 +70,6 @@ fun KuyaYanaTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /* do something */ }) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Localized description",
-                    tint = secondary
-                )
-            }
             IconButton(onClick = {
                 authViewModel.logout()
                 navController.navigate(KuyaYanaScreen.Register.name)
@@ -83,7 +77,7 @@ fun KuyaYanaTopAppBar(
             }
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.ExitToApp,
+                    imageVector = Icons.AutoMirrored.Rounded.ExitToApp,
                     contentDescription = "Localized description",
                     tint = secondary
                 )

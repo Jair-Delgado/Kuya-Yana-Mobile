@@ -58,6 +58,20 @@ fun KuyaYanaNavigationBar(
             selected = false,
             onClick = {navController.navigate(KuyaYanaScreen.Calendar.name)}
         )
+        NavigationBarItem(
+            icon = { Icon(
+                painter = painterResource(id = R.drawable.subject),
+                contentDescription = stringResource(id = R.string.asignaturas),
+                tint = MaterialTheme.colorScheme.surface
+            )},
+            label = { Text(
+                stringResource(id = R.string.asignaturas),
+                color = Color.White,
+                style = MaterialTheme.typography.labelLarge
+            ) },
+            selected = false,
+            onClick = {navController.navigate(KuyaYanaScreen.Subject.name)}
+        )
 
         NavigationBarItem(
             icon = {Icon(

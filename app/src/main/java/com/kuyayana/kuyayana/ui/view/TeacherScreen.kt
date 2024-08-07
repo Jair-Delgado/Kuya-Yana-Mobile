@@ -25,13 +25,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.kuyayana.kuyayana.data.models.Subject
 import com.kuyayana.kuyayana.data.models.Teacher
+import com.kuyayana.kuyayana.data.routes.KuyaYanaScreen
 import com.kuyayana.kuyayana.ui.viewmodel.TeacherViewModel
 
 
 @Composable
 fun TeacherScreen(
+    navController: NavHostController ,
     teacherViewModel: TeacherViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
@@ -47,6 +51,8 @@ fun TeacherScreen(
     LaunchedEffect(teachers) {
         Log.d("TeacherScreen", "Teachers: $teachers")
     }
+
+    //Formulario para la creacion del profesor
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -77,8 +83,8 @@ fun TeacherScreen(
             label = { Text("Teléfono") },
             modifier = Modifier.fillMaxWidth()
         )
+        //Dropdown de las asignaturas
         Spacer(Modifier.padding(vertical = 8.dp))
-
         var expanded by remember { mutableStateOf(false) }
         Box {
             OutlinedTextField(
@@ -102,13 +108,13 @@ fun TeacherScreen(
                         onClick = {
                             selectedSubject = subject
                             expanded = false
-
                         }
                     )
                 }
             }
         }
 
+        //Boton para la creacion del Profesor
         Spacer(Modifier.padding(vertical = 16.dp))
         Button(
             onClick = {
@@ -120,14 +126,25 @@ fun TeacherScreen(
                         phoneNumber = phoneNumber,
                         subject = selectedSubject
                     )
-                    teacherViewModel.createTeacher(
-                        newTeacher,
-                        selectedSubject!!
-                    )
-                    email = ""
-                    teacherName = ""
-                    teacherLastName = ""
-                    phoneNumber = ""
+
+                    try {
+
+                        teacherViewModel.createTeacher(
+                            newTeacher,
+                            selectedSubject!!
+                        )
+                        email = ""
+                        teacherName = ""
+                        teacherLastName = ""
+                        phoneNumber = ""
+                        selectedSubject = null
+
+                        navController.navigate(KuyaYanaScreen.TeacherList.name)
+                    }catch (e: Exception) {
+                        Log.e("TeacherScreen", "Error creating teacher: ", e)
+                    }
+                } else {
+                    Log.e("TeacherScreen", "Subject not selected!")
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -135,11 +152,5 @@ fun TeacherScreen(
             Text("Crear Profesor")
         }
 
-        LazyColumn {
-            items(teachers){ teacher ->
-                Text(text = teacher.teacherName)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
     }
 }

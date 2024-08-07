@@ -48,6 +48,7 @@ import java.util.Locale
 @SuppressLint("RememberReturnType")
 @Composable
 fun EventsScreen (
+    navController: NavHostController,
     eventViewModel: EventViewModel = viewModel(),
 ){
     var title by remember { mutableStateOf("")}
@@ -88,6 +89,7 @@ fun EventsScreen (
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ){
+        //Selectores de Fecha y Hora
         val datePickerDialog = remember {
             DatePickerDialog(
                 context,
@@ -164,7 +166,6 @@ fun EventsScreen (
                 trailingIcon = {
                     IconButton(onClick = {
                         datePickerDialog.show()
-                        //startTimePickerDialog.show()
                     }) {
                         Icon(Icons.Filled.DateRange, contentDescription = "")
                     }
@@ -180,7 +181,6 @@ fun EventsScreen (
                 trailingIcon = {
                     IconButton(onClick = {
                         endDatePickerDialog.show()
-                        // endTimePickerDialog.show()
                     }) {
                         Icon(Icons.Filled.DateRange, contentDescription = "")
                     }
@@ -188,7 +188,7 @@ fun EventsScreen (
                 readOnly = true
             )
 
-            //CATEGORIA
+            //Selector de Categoria
             Spacer(Modifier.padding(vertical = 8.dp))
 
             var expandedCategory by remember { mutableStateOf(false) }
@@ -206,7 +206,6 @@ fun EventsScreen (
                 DropdownMenu(
                     expanded = expandedCategory,
                     onDismissRequest = { expandedCategory = false },
-
                     ) {
                     categories.forEach { category ->
                         DropdownMenuItem(
@@ -220,10 +219,7 @@ fun EventsScreen (
                 }
             }
 
-            //FINALIZA CATEGORIA-------------
-
             Spacer(Modifier.padding(vertical = 8.dp))
-
             var expanded by remember { mutableStateOf(false) }
             Box {
                 OutlinedTextField(
@@ -289,8 +285,6 @@ fun EventsScreen (
                             title = title,
                             description = description,
                             start = "${startDate}T${String.format("%02d:%02d", startHour, startMinute)}-05:00",
-                            //start = start,
-                            // end = end,
                             end ="${endDate}T${String.format("%02d:%02d", endHour, endMinute)}-05:00",
                             teacher = teacher
                         )
@@ -302,12 +296,19 @@ fun EventsScreen (
                         )
                         title = ""
                         description = ""
-                        // end = ""
+                        startHour = 0
+                        startMinute = 0
                         endHour = 0
                         endMinute = 0
                         start = ""
-                    }
+                        selectedTeacher = null
+                        selectedSubject = null
 
+                        when (selectedCategory?.categoryName) {
+                            "clase" -> navController.navigate(KuyaYanaScreen.Calendar.name)
+                            "evento" -> navController.navigate(KuyaYanaScreen.TaskList.name)
+                        }
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
