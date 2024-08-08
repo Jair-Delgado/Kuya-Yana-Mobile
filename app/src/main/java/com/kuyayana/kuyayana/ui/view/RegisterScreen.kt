@@ -1,5 +1,6 @@
 package com.kuyayana.kuyayana.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Button
@@ -140,8 +141,9 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                if (password == validatePassword && password == ""){
+                if (password == validatePassword && password != ""){
                     authViewModel.register(email, password)
+                    onRegisterSuccess()
                 }
                       },
             modifier = Modifier.fillMaxWidth()

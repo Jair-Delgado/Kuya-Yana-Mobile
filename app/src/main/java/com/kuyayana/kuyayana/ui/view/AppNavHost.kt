@@ -40,7 +40,7 @@ fun AppNavHost(
             )
         }
         composable(route = KuyaYanaScreen.Register.name) {
-            RegisterScreen(onRegisterSuccess = { navController.navigate(KuyaYanaScreen.Register.name)},
+            RegisterScreen(onRegisterSuccess = { navController.navigate(KuyaYanaScreen.Main.name)},
                 onLoginClick =
                     { navController.navigate(KuyaYanaScreen.Login.name) }
                 )
