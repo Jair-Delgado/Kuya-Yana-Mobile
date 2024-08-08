@@ -101,11 +101,6 @@ fun TeacherItem(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
-                Text(
-                    text = "TELEFONO:  ${teacher.email}",
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
