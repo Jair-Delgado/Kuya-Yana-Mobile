@@ -27,7 +27,7 @@ class TeacherRepository {
                     "email" to teacher.email,
                     "phoneNumber" to teacher.phoneNumber,
                     "subject" to hashMapOf(
-                        "subjectName" to subject.subjectName,
+                        "subjectName" to "NAN",
                         "user" to hashMapOf(
                             "id" to uid
                         )

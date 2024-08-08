@@ -74,7 +74,7 @@ fun TeacherScreen(
             onValueChange = {
                 email = it
                 isValidEmail = Regex(emailPattern).matches(it)
-                            },
+            },
             label = { Text("Email") },
             isError = !isValidEmail,
             modifier = Modifier.fillMaxWidth()
@@ -93,7 +93,7 @@ fun TeacherScreen(
             onValueChange = {
                 teacherName = it
                 isValidTeacherName = Regex(namePattern).matches(it)
-                            },
+            },
             label = { Text("Nombre") },
             isError = !isValidTeacherName,
             modifier = Modifier.fillMaxWidth()
@@ -112,7 +112,7 @@ fun TeacherScreen(
             onValueChange = {
                 teacherLastName = it
                 isValidTeacherLastName = Regex(namePattern).matches(it)
-                            },
+            },
             label = { Text("Apellido") },
             isError = !isValidTeacherLastName,
             modifier = Modifier.fillMaxWidth()
@@ -130,11 +130,12 @@ fun TeacherScreen(
             value = phoneNumber,
             onValueChange = {
                 if (it.length <= 10 && Regex(phonePattern).matches(it)) {
-                phoneNumber = it
-                isValidPhoneNumber = true
-            } else {
-                isValidPhoneNumber = false
-            } },
+                    phoneNumber = it
+                    isValidPhoneNumber = true
+                } else {
+                    isValidPhoneNumber = false
+                }
+            },
             label = { Text("Teléfono") },
             isError = !isValidPhoneNumber,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -163,7 +164,7 @@ fun TeacherScreen(
                 readOnly = true,
                 label = { Text("Asignatura") }
             )
-            DropdownMenu(
+            /*DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
 
@@ -179,33 +180,34 @@ fun TeacherScreen(
                     )
                 }
             }
-        }
+        }*/
 
-        Spacer(Modifier.padding(vertical = 16.dp))
-        Button(
-            onClick = {
-                if (isValidEmail && isValidTeacherName && isValidTeacherLastName && isValidPhoneNumber && selectedSubject != null) {
-                    val newTeacher = Teacher(
-                        email = email,
-                        teacherName = teacherName,
-                        teacherLastName = teacherLastName,
-                        phoneNumber = phoneNumber,
-                        subject = selectedSubject!!
-                    )
-                    teacherViewModel.createTeacher(newTeacher,selectedSubject!!)
-                    // Clear fields after successful creation
-                    email = ""
-                    teacherName = ""
-                    teacherLastName = ""
-                    phoneNumber = ""
-                    selectedSubject = null
-                    navController.navigate(KuyaYanaScreen.TeacherList.name)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Crear Profesor")
-        }
+            Spacer(Modifier.padding(vertical = 16.dp))
+            Button(
+                onClick = {
+                    if (isValidEmail && isValidTeacherName && isValidTeacherLastName && isValidPhoneNumber != null) {
+                        val newTeacher = Teacher(
+                            email = email,
+                            teacherName = teacherName,
+                            teacherLastName = teacherLastName,
+                            phoneNumber = phoneNumber,
+                            subject = Subject()
+                        )
+                        teacherViewModel.createTeacher(newTeacher, Subject())
+                        // Clear fields after successful creation
+                        email = ""
+                        teacherName = ""
+                        teacherLastName = ""
+                        phoneNumber = ""
+                        selectedSubject = null
+                        navController.navigate(KuyaYanaScreen.TeacherList.name)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Crear Profesor")
+            }
 
+        }
     }
 }
